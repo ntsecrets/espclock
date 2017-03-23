@@ -1,6 +1,14 @@
 
 
-#define VERSION "1.5.23"
+const char* www_username = "admin";
+const char* updatePath = "/fwupload";
+// used by the stupid updater, which doesn't take the password
+const char* www_password = "updateme";
+
+//1d6cc
+//1d81d
+
+#define VERSION "1.5.27"
 
 #include <Time.h>
 #include <TimeLib.h>
@@ -41,6 +49,7 @@ ESP8266HTTPUpdateServer httpUpdater;
 int clockMode;
 bool ipshown = false;
 int wificonnects = 0;
+uint8_t setupdisp = 0;
 
 
 ESP8266WebServer server (80);
@@ -51,8 +60,10 @@ String httpUpdateResponse;
 
 void handleRoot() {
 
- 
-  
+  if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
+    return server.requestAuthentication();
+  }
+
   String s = MAIN_page;
   s.replace("@@SSID@@", settings.ssid);
   s.replace("@@PSK@@", settings.psk);
@@ -267,13 +278,13 @@ void handleRoot() {
   s.replace("@@BRIGHT@@", String(settings.bright));
 
   s.replace("@@ID@@", String(ESP.getChipId(), HEX));
-    s.replace("@@SIGNAL@@", String(WiFi.RSSI()));
+  s.replace("@@SIGNAL@@", String(WiFi.RSSI()));
 
-s.replace("@@FUDGE@@", String(settings.fudge));
-s.replace("@@WIFICONNECTS@@", String(wificonnects));
-  
+  s.replace("@@FUDGE@@", String(settings.fudge));
+  s.replace("@@WIFICONNECTS@@", String(wificonnects));
+
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
-            "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) + 
+            "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
             "<br>Last Sync: " + String(NTP.getTimeDate(NTP.getLastSync())) + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())));
 
   httpUpdateResponse = "";
@@ -281,6 +292,13 @@ s.replace("@@WIFICONNECTS@@", String(wificonnects));
 }
 
 void handleForm() {
+
+
+  if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
+    return server.requestAuthentication();
+  }
+
+
   String update_wifi = server.arg("update_wifi");
   String t_ssid = server.arg("ssid");
   String t_psk = server.arg("psk");
@@ -353,42 +371,45 @@ void handleForm() {
 
   //  configTime(0, 0, settings.timeserver);
 
-
-  NTP.setNTPServer(settings.timeserver);
   NTP.setPollingInterval(settings.interval);
+  NTP.setNTPServer(settings.timeserver);
+
 
 
 
 }
 
-void handleCredits(){
+void handleCredits() {
 
-httpUpdateResponse = "";
+if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
+    return server.requestAuthentication();
+  }
+  httpUpdateResponse = "";
   server.send(200, "text/html", credits_page);
 
-  
+
 }
 
 void setup() {
 
   char hostname = char(ESP.getChipId());
- 
+
   MDNS.begin(&hostname);
 
   setupDisplay();
   pinMode(SETUP_PIN, INPUT);
   digitalWrite(SETUP_PIN, HIGH);
-  
+
   server.begin();
-  
+
   setupWiFi();
   //  setupTime();
   server.on("/", handleRoot);
   server.on("/form", handleForm);
   server.on("/credits", handleCredits);
 
-httpUpdater.setup(&server);  //ota
-  
+  httpUpdater.setup(&server, updatePath, www_username, www_password);  //ota  TODO: fix the password to match the other one, didn't work when I tried. 
+
 
   NTP.init(settings.timeserver, UTC);
   NTP.setPollingInterval(settings.interval);
@@ -399,9 +420,13 @@ void loop() {
   server.handleClient();
   if (digitalRead(SETUP_PIN) == 0 && !ipshown) {
 
-    displayIP();
+    displayIP(false);
+    delay(1000);
+    displayIP(true);
+    delay(1000);
+    displayID();
     ipshown = true;
-  //  digitalWrite(SETUP_PIN, HIGH);
+    //  digitalWrite(SETUP_PIN, HIGH);
   }
   if (clockMode == MODE_CLOCK) {
     if (timeStatus() != timeNotSet) {
@@ -409,38 +434,54 @@ void loop() {
       if (millis() % 10 == 0 ) {
         displayClock();
         //connect wifi if not connected
-if (WiFi.status() != WL_CONNECTED) {
-    delay(1);
-    displayDash();
-    setupSTA();
-    wificonnects++;
-    return;
-}
+        if (WiFi.status() != WL_CONNECTED) {
+          delay(1);
+          displayDash();
+          setupSTA();
+          wificonnects++;
+          return;
+        }
       }
       //   }
     }
+  } else {
+    //mode setup
+    if (millis() % 1000 == 0) {
+      switch (setupdisp) {
+        case 0: displayID();
+              setupdisp++;
+              break;
+        case 1:
+              displayIP(false);
+              setupdisp++;
+              break;
+        case 2:
+              displayIP(true);
+              setupdisp = 0;
+              break;
+        }
+
+
+    }
+
   }
 
-
-
-
-  
 }
 
 void setupWiFi() {
- 
+
   settings.Load();
   // Wait up to 5s for GPIO0 to go low to enter AP/setup mode.
   //displayBusy(0);
   displayID();
   while (millis() < 5000) {
     if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
-     
+
       return setupAP();
     }
     delay(50);
   }
- // stopDisplayBusy();
+  // stopDisplayBusy();
   setupSTA();
 }
 
@@ -450,8 +491,8 @@ void setupSTA()
   char psk[64];
   memset(ssid, 0, 32);
   memset(psk, 0, 64);
- //displayBusy(1);
- 
+  //displayBusy(1);
+
 
   clockMode = MODE_CLOCK;
   WiFi.mode(WIFI_STA);
@@ -466,9 +507,11 @@ void setupSTA()
   while (WiFi.status() != WL_CONNECTED) {
     delay(100);
   }
- // stopDisplayBusy();
- // displayDash();
- displayIP();
+  // stopDisplayBusy();
+  // displayDash();
+  displayIP(false);
+  delay(1000);
+  displayIP(true);
 }
 
 void setupAP() {
