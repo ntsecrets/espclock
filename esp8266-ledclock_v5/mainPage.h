@@ -14,7 +14,7 @@ const char MAIN_page[] PROGMEM = R"=====(
  .heading {font-weight: bold; background: #c0c0c0; padding: 0.5em;}
  .update {color: #dd3333; font-size: 0.75em;}
  </style>
-</head><body onload="secsdiff()">
+</head><body>
 <div class=title>NTP Clock @@VERSION@@</div>
 <div class=name>Location: @@CLOCKNAME@@</div>
 <div class=name>Built @@BUILDDATE@@ @@BUILDTIME@@</div>

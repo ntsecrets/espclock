@@ -11,7 +11,7 @@ const char* www_password = "updateme";
 // test change
 
 
-#define VERSION "1.5.27"
+#define VERSION "1.5.29"
 
 #include <Time.h>
 #include <TimeLib.h>
@@ -288,7 +288,7 @@ void handleRoot() {
 
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
             "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
-            "<br>Last Sync: " + String(NTP.getTimeDate(NTP.getLastSync())) + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())));
+            "<br>Last Sync: " + String(NTP.getTimeDate(NTP.getLastSync())) + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())) + "<br>Current NTP Server: " + String(NTP.getNTPServer(0)));
 
   httpUpdateResponse = "";
   server.send(200, "text/html", s);
@@ -365,20 +365,24 @@ void handleForm() {
   settings.Save();
 
 
+  server.handleClient();
 
-
-  if (update_wifi == "1") {
+  if (update_wifi == "1" || clockMode == MODE_SETUP) {
     delay(1000);
     setupWiFi();
   }
 
-  //  configTime(0, 0, settings.timeserver);
+  // only re-init if something changed here
+  if (settings.interval != NTP.getPollingInterval()) {
+  
+  NTP.init(settings.timeserver, UTC);
 
+  } 
   NTP.setPollingInterval(settings.interval);
   NTP.setNTPServer(settings.timeserver);
-
-
-
+  
+  
+  clockMode = MODE_CLOCK;
 
 }
 
@@ -395,9 +399,10 @@ if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && 
 
 void setup() {
 
-  char hostname = char(ESP.getChipId());
+  //char hostname = char(ESP.getChipId());
 
-  MDNS.begin(&hostname);
+  MDNS.begin(String(ESP.getChipId(), HEX).c_str());
+  MDNS.addService("http", "tcp", 80);
 
   setupDisplay();
   pinMode(SETUP_PIN, INPUT);
@@ -428,8 +433,9 @@ void loop() {
     displayIP(true);
     delay(1000);
     displayID();
+    delay(1000);
     ipshown = true;
-    //  digitalWrite(SETUP_PIN, HIGH);
+  //   digitalWrite(SETUP_PIN, LOW);
   }
   if (clockMode == MODE_CLOCK) {
     if (timeStatus() != timeNotSet) {
@@ -520,7 +526,7 @@ void setupSTA()
 void setupAP() {
   clockMode = MODE_SETUP;
   WiFi.mode(WIFI_AP);
-  WiFi.softAP(WIFI_AP_NAME, WPA_PSK);
+  WiFi.softAP((String(WIFI_AP_NAME) + String(ESP.getChipId(), HEX)).c_str(), WPA_PSK);
   displayAP();
 }
 

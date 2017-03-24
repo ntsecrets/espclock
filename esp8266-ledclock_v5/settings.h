@@ -112,7 +112,7 @@
 
 // TODO finish the defaults
 
-#define CLOCK_NAME "ESP-CLOCK"
+#define CLOCK_NAME "ESP-CLOCK-"
 #define WIFI_AP_NAME CLOCK_NAME
 
 

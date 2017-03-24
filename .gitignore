@@ -1,0 +1,6 @@
+
+*.bin
+
+*.tmp
+
+esp8266-ledclock_v5/esp8266-ledclock_v5.ino.generic.bin

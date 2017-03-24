@@ -132,44 +132,26 @@ void stopDisplayBusy() {
 // IP Display handler.
 //volatile signed char dispOctet = -1;
 
-char displayIP(bool half) {
+void displayIP(bool half) {
 // we want to just blow through this without a delay, so it doesn't hang up stuff
   if (!clockMode) {
     if (!half){
       matrix.print(WiFi.softAPIP()[0], DEC);
-      matrix.writeDisplay();
-  
-      matrix2.print(WiFi.softAPIP()[1], DEC);
-      matrix2.writeDisplay();
-    } else {
-      //delay(1000);
-      if (!half){
-      matrix.print(WiFi.softAPIP()[2], DEC);
-      matrix.writeDisplay();
-      } else {
+      matrix2.print(WiFi.softAPIP()[1], DEC);    
+    } else {    
+      matrix.print(WiFi.softAPIP()[2], DEC);  
       matrix2.print(WiFi.softAPIP()[3], DEC);
-      matrix2.writeDisplay();
-      }
     }
-    //   delay(1000);
-
   } else {
-
+      if (!half){
     matrix.print(WiFi.localIP()[0], DEC);
-    matrix.writeDisplay();
-
     matrix2.print(WiFi.localIP()[1], DEC);
-    matrix2.writeDisplay();
-    delay(1000);
+      } else {
     matrix.print(WiFi.localIP()[2], DEC);
-    matrix.writeDisplay();
-
     matrix2.print(WiFi.localIP()[3], DEC);
-    matrix2.writeDisplay();
-    delay(1000);
+      }
   }
-  //  display();
-  return false;
+    display();
 }
 
 
