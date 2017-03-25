@@ -232,7 +232,7 @@ void displayClock() {
 
 
     matrix2.print(s * 100 + milliseconds, DEC);
-
+    
     matrix2.drawColon(blinkColon);  //this has to go after or else it doesn't work
 
   }
@@ -269,9 +269,30 @@ void displayClock() {
 
 
  if (milliseconds == 0){  //only update if it needs it (on the second)
+    
+
+
+  
     matrix.print(displayValue, DEC);
+    if (synced){
+    matrix.writeDigitNum(4, displayValue % 10  , synced);
+    synced = false;
+    }
 
     matrix.drawColon(blinkColon);
+
+    // set this back to false, so its on for 1 second (I hope)
+    
+    //0134
+     // pad the minutes
+  if (m < 10) {
+    matrix.writeDigitNum(3, 0);
+  }
+  // need 00 for when its 0
+  if (h == 0) {
+    matrix.writeDigitNum(1, 0);
+  }
+
  }
 
 

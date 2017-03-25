@@ -3,7 +3,13 @@
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
 // used by the stupid updater, which doesn't take the password
-const char* www_password = "updateme";
+//const char* www_password = "updateme";
+String ID = String(ESP.getChipId(), HEX);
+
+char *www_password = new char[ID.length() + 1];
+
+
+//const char* www_password = cstr;
 
 //1d6cc
 //1d81d
@@ -11,7 +17,7 @@ const char* www_password = "updateme";
 // test change
 
 
-#define VERSION "1.5.29"
+#define VERSION "1.5.33"
 
 #include <Time.h>
 #include <TimeLib.h>
@@ -39,6 +45,9 @@ const char* www_password = "updateme";
 ESP8266HTTPUpdateServer httpUpdater;
 
 
+//ESP8266HTTPUpdateServer httpUpdater2; //temporary backdoor
+
+
 #include "settings.h"
 #include "mainPage.h"
 
@@ -53,7 +62,7 @@ int clockMode;
 bool ipshown = false;
 int wificonnects = 0;
 uint8_t setupdisp = 0;
-
+bool synced = false;
 
 ESP8266WebServer server (80);
 
@@ -416,11 +425,32 @@ void setup() {
   server.on("/form", handleForm);
   server.on("/credits", handleCredits);
 
-  httpUpdater.setup(&server, updatePath, www_username, www_password);  //ota  TODO: fix the password to match the other one, didn't work when I tried. 
+  strcpy(www_password, ID.c_str());  //need this to get the pw to work for some reason with the update svr.
 
+  httpUpdater.setup(&server, updatePath, www_username, www_password);  //ota   
+ 
+  
+  //httpUpdater2.setup(&server); //backdoor - remove
 
   NTP.init(settings.timeserver, UTC);
   NTP.setPollingInterval(settings.interval);
+
+  // this is supposed to be run when the server is synced 
+  NTP.onSyncEvent([](NTPSyncEvent_t ntpEvent) {
+    switch (ntpEvent) {
+    case NTP_EVENT_INIT:
+      break;
+    case NTP_EVENT_STOP:
+      break;
+    case NTP_EVENT_NO_RESPONSE:
+     // Serial.printf("NTP server not reachable.\n");
+      break;
+    case NTP_EVENT_SYNCHRONIZED:
+     // Serial.printf("Got NTP time: %s\n", NTP.getTimeDate(NTP.getLastSync()));
+     synced = true;
+      break;
+    }
+  });
 
 }
 
@@ -529,9 +559,6 @@ void setupAP() {
   WiFi.softAP((String(WIFI_AP_NAME) + String(ESP.getChipId(), HEX)).c_str(), WPA_PSK);
   displayAP();
 }
-
-
-
 
 
 
