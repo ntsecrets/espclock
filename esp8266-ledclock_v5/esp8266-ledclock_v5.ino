@@ -382,7 +382,7 @@ void handleCredits() {
 if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
     return server.requestAuthentication();
   }
-  httpUpdateResponse = "";
+  
   server.send(200, "text/html", credits_page);
 
 

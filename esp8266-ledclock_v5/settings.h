@@ -406,7 +406,7 @@ class Settings {
       buffer[EEPROM_DIM_OFFSET] =  DEFAULT_DIM;
       buffer[EEPROM_BRIGHT_OFFSET] = DEFAULT_BRIGHT;
 
-      buffer[EEPROM_FUDGE_OFFSET] = 1;   /for now
+      buffer[EEPROM_FUDGE_OFFSET] = 1;   //for now
 
 
 
