@@ -1,35 +1,17 @@
-
+#define VERSION "1.5.34"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
-// used by the stupid updater, which doesn't take the password
-//const char* www_password = "updateme";
+
 String ID = String(ESP.getChipId(), HEX);
 
 char *www_password = new char[ID.length() + 1];
 
 
-//const char* www_password = cstr;
-
-//1d6cc
-//1d81d
-
-// test change
-
-
-#define VERSION "1.5.33"
-
 #include <Time.h>
 #include <TimeLib.h>
 #include <Timezone.h>
 #include "credits.h"
-
-//#include <Ticker.h>
-
-//US Eastern Time Zone (New York, Detroit)
-//TimeChangeRule myDST = {"EDT", Second, Sun, Mar, 2, -240};    //Daylight time = UTC - 4 hours
-//TimeChangeRule mySTD = {"EST", First, Sun, Nov, 2, -300};     //Standard time = UTC - 5 hours
-//Timezone myTZ(myDST, mySTD);
 
 #include <EEPROM.h>
 #include <ESP8266WiFiMulti.h>
