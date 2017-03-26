@@ -69,7 +69,7 @@
 
 /** Set this to 1 to allow config of SNTP server(s) by DNS name */
 #ifndef SNTP_SERVER_DNS
-#define SNTP_SERVER_DNS             0
+#define SNTP_SERVER_DNS             1
 #endif
 
 /** Handle support for more than one server via NTP_MAX_SERVERS,
@@ -104,7 +104,7 @@
  *        server whose synchronization source has expired for a very long time.
  */
 #ifndef SNTP_CHECK_RESPONSE
-#define SNTP_CHECK_RESPONSE         0
+#define SNTP_CHECK_RESPONSE         2
 #endif
 
 /** According to the RFC, this shall be a random delay
@@ -153,7 +153,7 @@ uint8 sntp_receive_time_size = 1;
 #define SNTP_SET_SYSTEM_TIME_US(sec, us)	sntp_update_rtc(sec, us)
 //#ifdef SNTP_SET_SYSTEM_TIME_US
 //#define SNTP_SET_SYSTEM_TIME_US(sec, us)	sntp_update_rtc(sec, us)
-#define SNTP_CALC_TIME_US           1
+//#define SNTP_CALC_TIME_US           1
 //#define SNTP_RECEIVE_TIME_SIZE      2
 //#else
 //#define SNTP_SET_SYSTEM_TIME_US(sec, us)
@@ -688,10 +688,8 @@ sntp_process(u32_t *receive_timestamp)
 	    /* display local time from GMT time */
 	    LWIP_DEBUGF(SNTP_DEBUG_TRACE, ("sntp_process: %s, %"U32_F" us", ctime(&t), us));
   } else{
-		u32_t us = ntohl(receive_timestamp[1]) / 4295;
 	  /* change system time and/or the update the RTC clock */
-	    //SNTP_SET_SYSTEM_TIME(t);
-		SNTP_SET_SYSTEM_TIME_US(t, us);
+	    SNTP_SET_SYSTEM_TIME(t);
 	    /* display local time from GMT time */
 	    t += time_zone * 60 * 60;// format GMT + time_zone TIME ZONE
 	    realtime_stamp = t;
@@ -705,7 +703,9 @@ sntp_process(u32_t *receive_timestamp)
   SNTP_SET_SYSTEM_TIME_US(t, us);
   /* display local time from GMT time */
   LWIP_DEBUGF(SNTP_DEBUG_TRACE, ("sntp_process: %s, %"U32_F" us", ctime(&t), us));
+
 #else /* SNTP_CALC_TIME_US */
+
   /* change system time and/or the update the RTC clock */
   SNTP_SET_SYSTEM_TIME(t);
   /* display local time from GMT time */
