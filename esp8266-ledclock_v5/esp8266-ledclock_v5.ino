@@ -8,8 +8,7 @@ String ID = String(ESP.getChipId(), HEX);
 char *www_password = new char[ID.length() + 1];
 
 
-#include <Time.h>
-#include <TimeLib.h>
+
 #include <Timezone.h>
 #include "credits.h"
 
@@ -21,8 +20,9 @@ char *www_password = new char[ID.length() + 1];
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-
 #include <NTPClient.h>
+#include <Time.h>
+
 #include <ESP8266HTTPUpdateServer.h>   //OTA update stuff!!
 ESP8266HTTPUpdateServer httpUpdater;
 

@@ -1,14 +1,9 @@
 #include <Wire.h> // Enable this line if using Arduino Uno, Mega, etc.
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
-
-
-
-#include <Time.h>
-#include <TimeLib.h>
 #include <Timezone.h>
 #include <EEPROM.h>
-
+//#include <time.h>
 
 
 Adafruit_7segment matrix = Adafruit_7segment();
@@ -24,7 +19,7 @@ letter_p = 0b0000000011110011; // P
 bool blinkColon = false;
 
 
-int milliseconds;
+uint16_t milliseconds;
 long unsigned int timeStamp = 0;
 int lastsecond = 0;
 time_t local;
@@ -127,10 +122,7 @@ void stopDisplayBusy() {
 }
 
 
-// End twirler handler.
-
 // IP Display handler.
-//volatile signed char dispOctet = -1;
 
 void displayIP(bool half) {
 // we want to just blow through this without a delay, so it doesn't hang up stuff
@@ -226,7 +218,7 @@ void displayClock() {
     displayDash();
   } else {
 
-    milliseconds = nowMs() / 10;
+ milliseconds = (millis() - timeStamp) / 10; 
 
 
 
