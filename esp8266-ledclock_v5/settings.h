@@ -246,7 +246,12 @@ class Settings {
       dim = int(buffer[EEPROM_DIM_OFFSET]);
       bright = int(buffer[EEPROM_BRIGHT_OFFSET]);
 
-      fudge = int(buffer[EEPROM_FUDGE_OFFSET]);
+     // fudge = int(buffer[EEPROM_FUDGE_OFFSET]);
+
+      fudge = ( ((unsigned long)buffer[EEPROM_FUDGE_OFFSET] << 24)
+                    + ((unsigned long)buffer[EEPROM_FUDGE_OFFSET + 1] << 16)
+                    + ((unsigned long)buffer[EEPROM_FUDGE_OFFSET + 2] << 8)
+                    + ((unsigned long)buffer[EEPROM_FUDGE_OFFSET + 3] ) );
 
       interval = time_t(buffer[EEPROM_INTERVAL_OFFSET]) << 8;
       interval |= buffer[EEPROM_INTERVAL_OFFSET + 1];
@@ -330,7 +335,13 @@ class Settings {
       buffer[EEPROM_DIM_OFFSET] = dim;
       buffer[EEPROM_BRIGHT_OFFSET] = bright;
 
-      buffer[EEPROM_FUDGE_OFFSET] = fudge;
+     // buffer[EEPROM_FUDGE_OFFSET] = fudge;
+
+       // convert from an unsigned long int to a 4-byte array
+      buffer[EEPROM_FUDGE_OFFSET] = (int)((fudge >> 24) & 0xFF) ;
+      buffer[EEPROM_FUDGE_OFFSET + 1] = (int)((fudge >> 16) & 0xFF) ;
+      buffer[EEPROM_FUDGE_OFFSET + 2] = (int)((fudge >> 8) & 0XFF);
+      buffer[EEPROM_FUDGE_OFFSET + 3] = (int)((fudge & 0XFF));;
 
 
 
@@ -480,8 +491,8 @@ class Settings {
     //  char tzbufferDT[15];
     //  char tzbufferST[15];
 
-    int dim;
-    int bright;
+    uint8_t dim;
+    uint8_t bright;
 
     int fudge;
 
