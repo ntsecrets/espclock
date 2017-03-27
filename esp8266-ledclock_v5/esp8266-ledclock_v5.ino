@@ -1,4 +1,4 @@
-#define VERSION "1.5.35"
+#define VERSION "1.5.36"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -60,7 +60,7 @@ void handleRoot() {
 
   String s = MAIN_page;
   s.replace("@@SSID@@", settings.ssid);
-  s.replace("@@PSK@@", settings.psk);
+  //s.replace("@@PSK@@", settings.psk);
   //  s.replace("@@TZ@@", String(settings.timezone));
   s.replace("@@TIME@@", String(NTP.getTimeDate(now())));
   //  s.replace("@@MIN@@", String(minute()));

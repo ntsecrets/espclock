@@ -238,12 +238,12 @@ void displayClock() {
   //milliseconds = (millis() - timeStamp) / 10;
 
   
- /*
+ 
   if (milliseconds > 99 || lastsecond < s) {
     milliseconds = 0;
-    timeStamp = millis();   */
+    timeStamp = millis();   
 
-  //}
+  }
 
   
 
