@@ -125,25 +125,25 @@ void stopDisplayBusy() {
 // IP Display handler.
 
 void displayIP(bool half) {
-// we want to just blow through this without a delay, so it doesn't hang up stuff
+  // we want to just blow through this without a delay, so it doesn't hang up stuff
   if (!clockMode) {
-    if (!half){
+    if (!half) {
       matrix.print(WiFi.softAPIP()[0], DEC);
-      matrix2.print(WiFi.softAPIP()[1], DEC);    
-    } else {    
-      matrix.print(WiFi.softAPIP()[2], DEC);  
+      matrix2.print(WiFi.softAPIP()[1], DEC);
+    } else {
+      matrix.print(WiFi.softAPIP()[2], DEC);
       matrix2.print(WiFi.softAPIP()[3], DEC);
     }
   } else {
-      if (!half){
-    matrix.print(WiFi.localIP()[0], DEC);
-    matrix2.print(WiFi.localIP()[1], DEC);
-      } else {
-    matrix.print(WiFi.localIP()[2], DEC);
-    matrix2.print(WiFi.localIP()[3], DEC);
-      }
+    if (!half) {
+      matrix.print(WiFi.localIP()[0], DEC);
+      matrix2.print(WiFi.localIP()[1], DEC);
+    } else {
+      matrix.print(WiFi.localIP()[2], DEC);
+      matrix2.print(WiFi.localIP()[3], DEC);
+    }
   }
-    display();
+  display();
 }
 
 
@@ -157,7 +157,7 @@ void displayClock() {
 
   //local = myTZ.toLocal(NTP.getTime(), &tcr);
 
- local = myTZ.toLocal(now() + settings.fudge, &tcr);
+  local = myTZ.toLocal(now() + settings.fudge, &tcr);
 
 
   /*  int h = hour();
@@ -195,8 +195,8 @@ void displayClock() {
   // 100 and then adding the minutes.
   displayValue = h * 100 + m;
   /*byte twentyfourhr = 0x01;
-  // Do 24 hour to 12 hour format conversion when required.
-  if (twentyfourhr != 0x01) {
+    // Do 24 hour to 12 hour format conversion when required.
+    if (twentyfourhr != 0x01) {
     // Handle when hours are past 12 by subtracting 12 hours (1200 value).
     if (h > 12) {
       displayValue -= 1200;
@@ -205,7 +205,7 @@ void displayClock() {
     else if (h == 0) {
       displayValue += 1200;
     }
-  }  */
+    }  */
 
   if (s % 2 == 0) {
     blinkColon = true;
@@ -214,18 +214,31 @@ void displayClock() {
   }
 
   boolean drawDots = false;
-  if (timeStatus() != timeSet && blinkColon == false) {
+  if (timeStatus() != timeSet && blinkColon == true) {
     displayDash();
   } else {
 
- //milliseconds = (millis() - timeStamp) / 10; 
+    //milliseconds = (millis() - timeStamp) / 10;
 
 
 
 
     matrix2.print(s * 100 + milliseconds, DEC);
-    
+
     matrix2.drawColon(blinkColon);  //this has to go after or else it doesn't work
+
+    // pad the seconds
+    if (s < 10) {
+      matrix2.writeDigitNum(0, 0);
+    }
+    // need 00 for when its 0
+    if (s == 0) {
+      matrix2.writeDigitNum(1, 0);
+    }
+
+    if (s == 0 && milliseconds == 0) {
+      matrix2.writeDigitNum(3, 0);
+    }
 
   }
 
@@ -237,64 +250,53 @@ void displayClock() {
 
   milliseconds = (millis() - timeStamp) / 10;
 
-  
- 
+
+
   if (milliseconds > 99 || lastsecond < s) {
     milliseconds = 0;
-    timeStamp = millis();   
+    timeStamp = millis();
 
   }
 
-  
 
-  // pad the seconds
-  if (s < 10) {
-    matrix2.writeDigitNum(0, 0);
-  }
-  // need 00 for when its 0
-  if (s == 0) {
-    matrix2.writeDigitNum(1, 0);
-  }
 
-  if (s == 0 && milliseconds == 0) {
-    matrix2.writeDigitNum(3, 0);
-  }
+
 
   lastsecond = s;
 
 
 
- if (milliseconds == 0){  //only update if it needs it (on the second)
-    
+  if (milliseconds == 0) { //only update if it needs it (on the second)
 
 
-  
+
+
     matrix.print(displayValue, DEC);
-    if (synced){
-    matrix.writeDigitNum(4, displayValue % 10  , synced);
-    synced = false;
+    if (synced) {
+      matrix.writeDigitNum(4, displayValue % 10  , synced);
+      synced = false;
     }
 
     matrix.drawColon(blinkColon);
 
     // set this back to false, so its on for 1 second (I hope)
-    
-    //0134
-     // pad the minutes
-  if (m < 10) {
-    matrix.writeDigitNum(3, 0);
-  }
-  // need 00 for when its 0
-  if (h == 0) {
-    matrix.writeDigitNum(1, 0);
-  }
 
- }
+    //0134
+    // pad the minutes
+    if (m < 10) {
+      matrix.writeDigitNum(3, 0);
+    }
+    // need 00 for when its 0
+    if (h == 0) {
+      matrix.writeDigitNum(1, 0);
+    }
+
+  }
 
 
   matrix.writeDisplay();
- 
-  
+
+
   matrix2.writeDisplay();
 
 
@@ -313,13 +315,13 @@ void setupDisplay() {
 
 
 void displayID() {
-uint16_t ua, ub;
-ua = (uint16_t) (ESP.getChipId() >> 16);
-ub = (uint16_t) (ESP.getChipId() & 0x0000FFFFuL);
+  uint16_t ua, ub;
+  ua = (uint16_t) (ESP.getChipId() >> 16);
+  ub = (uint16_t) (ESP.getChipId() & 0x0000FFFFuL);
 
-matrix.print(ua, HEX);
-matrix2.print(ub, HEX);
-display();
+  matrix.print(ua, HEX);
+  matrix2.print(ub, HEX);
+  display();
 
 }
 
