@@ -218,7 +218,7 @@ void displayClock() {
     displayDash();
   } else {
 
- milliseconds = (millis() - timeStamp) / 10; 
+ //milliseconds = (millis() - timeStamp) / 10; 
 
 
 
@@ -235,7 +235,7 @@ void displayClock() {
   //  handle milliseconds
 
 
-  //milliseconds = (millis() - timeStamp) / 10;
+  milliseconds = (millis() - timeStamp) / 10;
 
   
  
