@@ -1,4 +1,4 @@
-#define VERSION "1.5.38"
+#define VERSION "1.5.39"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -78,6 +78,13 @@ void handleRoot() {
 
   s.replace("@@DST@@", settings.DST);
   s.replace("@@STD@@", settings.STD);
+
+
+  if (settings.twelvehr == 1) {
+  s.replace("@@12HRMODE@@", "checked");
+  } else {
+    s.replace("@@12HRMODE@@", "");
+  }
 
   //dstDayofweek
   switch (settings.dstDayofweek) {
@@ -328,8 +335,10 @@ void handleForm() {
   settings.fudge = server.arg("fudge").toInt();
 
 
-  // String tz = server.arg("timezone");
+  settings.twelvehr = server.arg("twelvehr").toInt();
 
+
+  // String tz = server.arg("timezone");
   //  if (tz.length()) {
   //    settings.timezone = tz.toInt();
   //  }

@@ -288,7 +288,8 @@ Dim End Hour:</td>
 </select>
 </td>
 </tr>
-<tr><td>Fudge Amount:</td><td><input type=text name="fudge" value="@@FUDGE@@" size=5>s</td>
+<tr><td>Fudge Amount:</td><td><input type=text name="fudge" value="@@FUDGE@@" size=5>s</td></tr>
+<tr><td>12 HR mode?:</td><td><input type=checkbox name="twelvehr" value=1 @@12HRMODE@@></td></tr>
 </table>
 <p/>
 <input type="submit" value="Update">

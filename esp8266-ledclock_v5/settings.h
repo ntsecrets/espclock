@@ -82,6 +82,9 @@
 #define EEPROM_FUDGE_OFFSET EEPROM_BRIGHT_OFFSET + EEPROM_BRIGHT_OFFSET_LENGTH
 #define EEPROM_FUDGE_OFFSET_LENGTH 4
 
+#define EEPROM_12HR_OFFSET EEPROM_FUDGE_OFFSET + EEPROM_FUDGE_OFFSET_LENGTH
+#define EEPROM_12HR_OFFSET_LENGTH 1
+
 //#define TZRULESIZLE 15  // 15 bytes each
 
 
@@ -246,6 +249,8 @@ class Settings {
       dim = int(buffer[EEPROM_DIM_OFFSET]);
       bright = int(buffer[EEPROM_BRIGHT_OFFSET]);
 
+      twelvehr = int(buffer[EEPROM_12HR_OFFSET]);
+
      // fudge = int(buffer[EEPROM_FUDGE_OFFSET]);
 
       fudge = ( ((unsigned long)buffer[EEPROM_FUDGE_OFFSET] << 24)
@@ -334,6 +339,7 @@ class Settings {
 
       buffer[EEPROM_DIM_OFFSET] = dim;
       buffer[EEPROM_BRIGHT_OFFSET] = bright;
+      buffer[EEPROM_12HR_OFFSET] = twelvehr;
 
      // buffer[EEPROM_FUDGE_OFFSET] = fudge;
 
@@ -417,6 +423,8 @@ class Settings {
       buffer[EEPROM_DIM_OFFSET] =  DEFAULT_DIM;
       buffer[EEPROM_BRIGHT_OFFSET] = DEFAULT_BRIGHT;
 
+      buffer[EEPROM_12HR_OFFSET] = 0;
+
       buffer[EEPROM_FUDGE_OFFSET] = 1;   //for now
 
 
@@ -493,6 +501,8 @@ class Settings {
 
     uint8_t dim;
     uint8_t bright;
+
+    uint8_t twelvehr;
 
     int fudge;
 

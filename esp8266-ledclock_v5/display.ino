@@ -194,9 +194,9 @@ void displayClock() {
   // value, like 3:30 turns into 330, by multiplying the hour by
   // 100 and then adding the minutes.
   displayValue = h * 100 + m;
-  /*byte twentyfourhr = 0x01;
+ 
     // Do 24 hour to 12 hour format conversion when required.
-    if (twentyfourhr != 0x01) {
+    if (settings.twelvehr != 0) {
     // Handle when hours are past 12 by subtracting 12 hours (1200 value).
     if (h > 12) {
       displayValue -= 1200;
@@ -205,7 +205,7 @@ void displayClock() {
     else if (h == 0) {
       displayValue += 1200;
     }
-    }  */
+    }  
 
   if (s % 2 == 0) {
     blinkColon = true;
