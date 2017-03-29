@@ -64,13 +64,13 @@ typedef time_t(*getExternalTime)();
 
 /*==============================================================================*/
 /* Useful Constants */
-#define SECS_PER_MIN  ((time_t)(60UL))
-#define SECS_PER_HOUR ((time_t)(3600UL))
-#define SECS_PER_DAY  ((time_t)(SECS_PER_HOUR * 24UL))
-#define DAYS_PER_WEEK ((time_t)(7UL))
-#define SECS_PER_WEEK ((time_t)(SECS_PER_DAY * DAYS_PER_WEEK))
-#define SECS_PER_YEAR ((time_t)(SECS_PER_WEEK * 52UL))
-#define SECS_YR_2000  ((time_t)(946684800UL)) // the time at the start of y2k
+#define SECS_PER_MIN  (60UL)
+#define SECS_PER_HOUR (3600UL)
+#define SECS_PER_DAY  (SECS_PER_HOUR * 24UL)
+#define DAYS_PER_WEEK (7UL)
+#define SECS_PER_WEEK (SECS_PER_DAY * DAYS_PER_WEEK)
+#define SECS_PER_YEAR (SECS_PER_WEEK * 52UL)
+#define SECS_YR_2000  (946684800UL) // the time at the start of y2k
  
 /* Useful Macros for getting elapsed time */
 #define numberOfSeconds(_time_) (_time_ % SECS_PER_MIN)  
@@ -116,13 +116,12 @@ int     month();           // the month now  (Jan is month 1)
 int     month(time_t t);   // the month for the given time
 int     year();            // the full four digit year: (2009, 2010 etc) 
 int     year(time_t t);    // the year for the given time
+time_t  drift();
 
 time_t now();              // return the current time as seconds since Jan 1 1970 
 void    setTime(time_t t);
 void    setTime(int hr,int min,int sec,int day, int month, int yr);
 void    adjustTime(long adjustment);
-
-time_t nowMs();  //added for getting the MS time
 
 /* date strings */ 
 #define dt_MAX_STRING_LEN 9 // length of longest date string (excluding terminating null)

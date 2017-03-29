@@ -1,4 +1,4 @@
-#define VERSION "1.5.37"
+#define VERSION "1.5.38"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -279,7 +279,7 @@ void handleRoot() {
 
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
             "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
-            "<br>Last Sync: " + String(NTP.getTimeDate(NTP.getLastSync())) + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())) + "<br>Current NTP Server: " + String(NTP.getNTPServer(0)));
+            "<br>Last Sync: " + String(NTP.getTimeDate(NTP.getLastSync())) + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())) + "<br>Current NTP Server: " + String(NTP.getNTPServer(0)) + "<br>Drift: " + String(drift()));
 
   httpUpdateResponse = "";
   server.send(200, "text/html", s);

@@ -33,7 +33,7 @@
 #include <WProgram.h> 
 #endif
 
-#include "TimeLib.h"
+#include "Time.h"
 
 static tmElements_t tm;          // a cache of time elements
 static time_t cacheTime;   // the time the cache was updated
@@ -241,10 +241,14 @@ static timeStatus_t Status = timeNotSet;
 
 getExternalTime getTimePtr;  // pointer to external sync function
 //setExternalTime setTimePtr; // not used in this version
-
+#define TIME_DRIFT_INFO
 #ifdef TIME_DRIFT_INFO   // define this to get drift data
 time_t sysUnsyncedTime = 0; // the time sysTime unadjusted by sync  
 #endif
+
+time_t drift(void){
+	return sysUnsyncedTime;
+}
 
 
 time_t now() {
@@ -270,17 +274,6 @@ time_t now() {
   }  
   return (time_t)sysTime;
 }
-
-
-// The ms time function 
-
-time_t nowMs()
- {
- 	return (millis() - prevMillis) % 1000;
- }
- 
-
-
 
 void setTime(time_t t) { 
 #ifdef TIME_DRIFT_INFO
