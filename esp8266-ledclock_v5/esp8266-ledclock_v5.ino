@@ -1,4 +1,4 @@
-#define VERSION "1.5.39"
+#define VERSION "1.5.43"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -65,6 +65,7 @@ void handleRoot() {
   s.replace("@@TIME@@", String(NTP.getTimeDate(now())));
   //  s.replace("@@MIN@@", String(minute()));
   s.replace("@@NTPSRV@@", settings.timeserver);
+  s.replace("@@NTPSRV1@@", settings.timeserver1);
   s.replace("@@NTPINT@@", String(settings.interval));
   s.replace("@@SYNCSTATUS@@", timeStatus() == timeSet ? "OK" : "Overdue");
   s.replace("@@CLOCKNAME@@", settings.name);
@@ -286,7 +287,12 @@ void handleRoot() {
 
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
             "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
-            "<br>Last Sync: " + String(NTP.getTimeDate(NTP.getLastSync())) + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())) + "<br>Current NTP Server: " + String(NTP.getNTPServer(0)) + "<br>Drift: " + String(drift()));
+            "<br>Last Sync: " + String(NTP.getTimeDate(NTP.getLastSync())) + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())) + "<br>Drift: " + String(drift())+ "<br>");
+  s.replace("@@TIMESERVER1@@", "<br>Current NTP Server 1: " + String(NTP.getNTPServer(0)));
+
+  if (sizeof(settings.timeserver1 > 0)) {
+   s.replace("@@TIMESERVER2@@", "<br>Current NTP Server 2: " + String(NTP.getNTPServer(1)));
+  }
 
   httpUpdateResponse = "";
   server.send(200, "text/html", s);
@@ -305,6 +311,8 @@ void handleForm() {
   String t_psk = server.arg("psk");
   String t_timeserver = server.arg("ntpsrv");
   t_timeserver.toCharArray(settings.timeserver, EEPROM_TIMESERVER_LENGTH, 0);
+  t_timeserver = server.arg("ntpsrv1");
+  t_timeserver.toCharArray(settings.timeserver1, EEPROM_TIMESERVER1_LENGTH, 0);
   if (update_wifi == "1") {
     settings.ssid = t_ssid;
     settings.psk = t_psk;
@@ -379,8 +387,10 @@ void handleForm() {
 
   } 
   NTP.setPollingInterval(settings.interval);
-  NTP.setNTPServer(settings.timeserver);
-  
+  NTP.setNTPServer(settings.timeserver, 0);
+  if (sizeof(settings.timeserver1 > 0)) {
+    NTP.setNTPServer(settings.timeserver1, 1);
+  }
   
   clockMode = MODE_CLOCK;
 
@@ -425,6 +435,11 @@ void setup() {
 
   NTP.init(settings.timeserver, UTC);
   NTP.setPollingInterval(settings.interval);
+
+  if (sizeof(settings.timeserver1 > 0)) {
+    NTP.setNTPServer(settings.timeserver1, 1);
+  }
+  
 
   // this is supposed to be run when the server is synced 
   NTP.onSyncEvent([](NTPSyncEvent_t ntpEvent) {

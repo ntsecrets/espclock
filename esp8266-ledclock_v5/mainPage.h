@@ -37,7 +37,8 @@ const char MAIN_page[] PROGMEM = R"=====(
 <tr><td colspan=2>Update Wifi config:<input type=checkbox name=update_wifi value=1></td></tr>
 
 <tr><td colspan=2 class=heading>Time Setup</td></tr>
-<tr><td>NTP Server:</td><td><input type=text name="ntpsrv" value="@@NTPSRV@@"></td></tr>
+<tr><td>NTP Server 1:</td><td><input type=text name="ntpsrv" value="@@NTPSRV@@"></td></tr>
+<tr><td>NTP Server 2:</td><td><input type=text name="ntpsrv1" value="@@NTPSRV1@@"></td></tr>
 <tr><td>Sync Interval:</td><td><input type=text name="ntpint" value="@@NTPINT@@">s</td></tr>
 <tr><td>DST:</td><td><input type=text name="dst" value="@@DST@@" size=3></td>
 <tr><tr><td>
@@ -297,6 +298,8 @@ Dim End Hour:</td>
 <div class="update">@@UPDATERESPONSE@@</div>
 <p>
 @@DEBUG@@
+@@TIMESERVER1@@
+@@TIMESERVER2@@
 <p>
 <a href="/">Refresh Page</a>
 <p>

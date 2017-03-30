@@ -85,11 +85,16 @@
 #define EEPROM_12HR_OFFSET EEPROM_FUDGE_OFFSET + EEPROM_FUDGE_OFFSET_LENGTH
 #define EEPROM_12HR_OFFSET_LENGTH 1
 
+#define EEPROM_TIMESERVER1_OFFSET EEPROM_12HR_OFFSET + EEPROM_12HR_OFFSET_LENGTH
+#define EEPROM_TIMESERVER1_LENGTH 32
+
 //#define TZRULESIZLE 15  // 15 bytes each
 
 
 
-#define DEFAULT_TIMESERVER "time.nist.gov"
+#define DEFAULT_TIMESERVER "0.north-america.pool.ntp.org"
+//#define DEFAULT_TIMESERVER1 "1.north-america.pool.ntp.org"
+
 #define MINIMUM_INTERVAL 60
 #define DEFAULT_INTERVAL 3600
 
@@ -180,6 +185,9 @@ class Settings {
       if (strlen(timeserver) < 1) {
         strcpy(timeserver, DEFAULT_TIMESERVER);
       }
+       // second (backup server)
+      strncpy(timeserver1, &buffer[EEPROM_TIMESERVER1_OFFSET], EEPROM_TIMESERVER1_LENGTH);
+      // can be empty
 
       // 1 DST CODE
       strncpy(DST, &buffer[EEPROM_DT_OFFSET], EEPROM_DT_LENGTH);
@@ -292,6 +300,7 @@ class Settings {
       // buffer[EEPROM_TZ_OFFSET] = timezone;
       // Copy timeserver.
       strncpy((char *)&buffer[EEPROM_TIMESERVER_OFFSET], (char *)timeserver, EEPROM_TIMESERVER_LENGTH);
+      strncpy((char *)&buffer[EEPROM_TIMESERVER1_OFFSET], (char *)timeserver1, EEPROM_TIMESERVER1_LENGTH);
       // Copy interval.
       buffer[EEPROM_INTERVAL_OFFSET] = interval  >> 8;
       buffer[EEPROM_INTERVAL_OFFSET + 1] = interval & 0xff;
@@ -370,6 +379,7 @@ class Settings {
       strncpy((char *)buffer, EEPROM_MAGIC, EEPROM_MAGIC_LENGTH);
       
       strncpy((char *)&buffer[EEPROM_TIMESERVER_OFFSET], DEFAULT_TIMESERVER, EEPROM_TIMESERVER_LENGTH);
+    //  strncpy((char *)&buffer[EEPROM_TIMESERVER1_OFFSET], DEFAULT_TIMESERVER1, EEPROM_TIMESERVER1_LENGTH);
       // Copy interval.
       interval = DEFAULT_INTERVAL;
       buffer[EEPROM_INTERVAL_OFFSET] = interval  >> 8;
@@ -476,7 +486,8 @@ class Settings {
     String ssid;
     String psk;
     //long timezone;
-    char timeserver[64];
+    char timeserver[32];   //this was 64 but the flash only had it as 32?
+    char timeserver1[32];
     int interval;
     String name;
 
