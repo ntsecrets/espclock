@@ -1,4 +1,4 @@
-#define VERSION "1.5.44"
+#define VERSION "1.5.45"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -41,7 +41,7 @@ ESP8266HTTPUpdateServer httpUpdater;
 #define MODE_SETUP 0
 #define MODE_CLOCK 1
 int clockMode;
-bool ipshown = false;
+//bool ipshown = false;
 int wificonnects = 0;
 uint8_t setupdisp = 0;
 bool synced = false;
@@ -415,7 +415,7 @@ void setup() {
   MDNS.addService("http", "tcp", 80);
 
   setupDisplay();
-  pinMode(SETUP_PIN, INPUT);
+  pinMode(SETUP_PIN, INPUT_PULLUP);
   digitalWrite(SETUP_PIN, HIGH);
 
   server.begin();
@@ -462,7 +462,8 @@ void setup() {
 
 void loop() {
   server.handleClient();
-  if (digitalRead(SETUP_PIN) == 0 && !ipshown) {
+ // if (digitalRead(SETUP_PIN) == 0 && !ipshown) {
+    if (digitalRead(SETUP_PIN) == 0) {
 
     displayIP(false);
     delay(1000);
@@ -470,8 +471,8 @@ void loop() {
     delay(1000);
     displayID();
     delay(1000);
-    ipshown = true;
-  //   digitalWrite(SETUP_PIN, LOW);
+//    ipshown = true;
+    digitalWrite(SETUP_PIN, HIGH);
   }
   if (clockMode == MODE_CLOCK) {
     if (timeStatus() != timeNotSet) {
