@@ -96,7 +96,7 @@
 //#define DEFAULT_TIMESERVER1 "1.north-america.pool.ntp.org"
 
 #define MINIMUM_INTERVAL 60
-#define DEFAULT_INTERVAL 3600
+#define DEFAULT_INTERVAL 1024
 
 #define DEFAULT_DT "EDT  "
 #define DEFAULT_ST "EST  "
@@ -117,6 +117,8 @@
 
 #define DEFAULT_DIM 22
 #define DEFAULT_BRIGHT 7
+
+#define DEFAULT_FUDGE 1UL
 
 // TODO finish the defaults
 
@@ -259,7 +261,7 @@ class Settings {
 
       twelvehr = int(buffer[EEPROM_12HR_OFFSET]);
 
-     // fudge = int(buffer[EEPROM_FUDGE_OFFSET]);
+     
 
       fudge = ( ((unsigned long)buffer[EEPROM_FUDGE_OFFSET] << 24)
                     + ((unsigned long)buffer[EEPROM_FUDGE_OFFSET + 1] << 16)
@@ -435,7 +437,11 @@ class Settings {
 
       buffer[EEPROM_12HR_OFFSET] = 0;
 
-      buffer[EEPROM_FUDGE_OFFSET] = 1;   //for now
+       // convert from an unsigned long int to a 4-byte array
+      buffer[EEPROM_FUDGE_OFFSET] = (int)((DEFAULT_FUDGE >> 24) & 0xFF) ;
+      buffer[EEPROM_FUDGE_OFFSET + 1] = (int)((DEFAULT_FUDGE >> 16) & 0xFF) ;
+      buffer[EEPROM_FUDGE_OFFSET + 2] = (int)((DEFAULT_FUDGE >> 8) & 0XFF);
+      buffer[EEPROM_FUDGE_OFFSET + 3] = (int)((DEFAULT_FUDGE & 0XFF));;
 
 
 
