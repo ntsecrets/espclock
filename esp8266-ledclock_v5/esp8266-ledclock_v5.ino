@@ -1,4 +1,4 @@
-#define VERSION "1.5.46"
+#define VERSION "1.5.47"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -519,8 +519,12 @@ void setupWiFi() {
   settings.Load();
   // Wait up to 5s for GPIO0 to go low to enter AP/setup mode.
   //displayBusy(0);
-  displayID();
+  display8s();  // display test for 1 second (first 1000 ms)
+  
   while (millis() < 5000) {
+    if (millis() > 1000) {
+      displayID();
+    }
     if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
 
       return setupAP();
@@ -544,14 +548,14 @@ void setupSTA()
   WiFi.mode(WIFI_STA);
   settings.ssid.toCharArray(ssid, 32);
   settings.psk.toCharArray(psk, 64);
-
+  WiFi.disconnect();  //this seems to help with the initial connect after a brief power interruption
   if (settings.psk.length()) {
     WiFi.begin(ssid, psk);
   } else {
     WiFi.begin(ssid);
   }
   
-uint8_t conncount = 0;
+uint8_t conncount = 100;
  //if you don't succeed try try again
   while (WiFi.status() != WL_CONNECTED) {
     

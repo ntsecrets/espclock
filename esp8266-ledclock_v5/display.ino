@@ -315,12 +315,23 @@ void setupDisplay() {
 
 
 void displayID() {
+  
   uint16_t ua, ub;
   ua = (uint16_t) (ESP.getChipId() >> 16);
   ub = (uint16_t) (ESP.getChipId() & 0x0000FFFFuL);
 
   matrix.print(ua, HEX);
   matrix2.print(ub, HEX);
+  display();
+
+}
+
+
+void display8s() {
+  matrix.print(8888, DEC);
+  matrix2.print(8888, DEC);
+   matrix.drawColon(true);
+   matrix2.drawColon(true);
   display();
 
 }
