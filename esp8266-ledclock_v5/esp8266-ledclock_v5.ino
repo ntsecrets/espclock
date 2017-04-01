@@ -1,4 +1,4 @@
-#define VERSION "1.5.45"
+#define VERSION "1.5.46"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -544,14 +544,33 @@ void setupSTA()
   WiFi.mode(WIFI_STA);
   settings.ssid.toCharArray(ssid, 32);
   settings.psk.toCharArray(psk, 64);
+
   if (settings.psk.length()) {
     WiFi.begin(ssid, psk);
   } else {
     WiFi.begin(ssid);
   }
-
+  
+uint8_t conncount = 0;
+ //if you don't succeed try try again
   while (WiFi.status() != WL_CONNECTED) {
+    
     delay(100);
+    if (conncount > 200) {
+       WiFi.disconnect();
+       displayDash();
+       delay(1000);
+       displayID();
+       if (settings.psk.length()) {
+            WiFi.begin(ssid, psk);
+          } else {
+            WiFi.begin(ssid);
+          }
+       conncount = 0;
+    }
+
+    
+    conncount++;
   }
   // stopDisplayBusy();
   // displayDash();
