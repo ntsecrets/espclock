@@ -1,4 +1,4 @@
-#define VERSION "1.5.47"
+#define VERSION "1.5.48"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -88,48 +88,51 @@ void handleRoot() {
   }
 
   //dstDayofweek
+  String dstDayofWeekTxt = "@@DSTDAYOFWEEKTXT@@";
   switch (settings.dstDayofweek) {
     case 0:  //default
-      s.replace("@@DSTDAYOFWEEKTXT@@", "Sunday");
+      s.replace(dstDayofWeekTxt, "Sunday");
       settings.dstDayofweek = 1;
       break;
     case 1:
-      s.replace("@@DSTDAYOFWEEKTXT@@", "Sunday");
+      s.replace(dstDayofWeekTxt, "Sunday");
       break;
     case 2:
-      s.replace("@@DSTDAYOFWEEKTXT@@", "Monday");
+      s.replace(dstDayofWeekTxt, "Monday");
       break;
     case 3:
-      s.replace("@@DSTDAYOFWEEKTXT@@", "Tuesday");
+      s.replace(dstDayofWeekTxt, "Tuesday");
       break;
     case 4:
-      s.replace("@@DSTDAYOFWEEKTXT@@", "Wednesday");
+      s.replace(dstDayofWeekTxt, "Wednesday");
       break;
     case 5:
-      s.replace("@@DSTDAYOFWEEKTXT@@", "Thursday");
+      s.replace(dstDayofWeekTxt, "Thursday");
       break;
     case 6:
-      s.replace("@@DSTDAYOFWEEKTXT@@", "Friday");
+      s.replace(dstDayofWeekTxt, "Friday");
       break;
     case 7:
-      s.replace("@@DSTDAYOFWEEKTXT@@", "Saturday");
+      s.replace(dstDayofWeekTxt, "Saturday");
       break;
   }
   s.replace("@@DSTDAYOFWEEK@@", String(settings.dstDayofweek));
 
+  String dstWeekTxt = "@@DSTWEEKTXT@@";
+
   //dstWeek
   switch (settings.dstWeek) {
     case 1:
-      s.replace("@@DSTWEEKTXT@@", "First");
+      s.replace(dstWeekTxt, "First");
       break;
     case 2:
-      s.replace("@@DSTWEEKTXT@@", "Second");
+      s.replace(dstWeekTxt, "Second");
       break;
     case 3:
-      s.replace("@@DSTWEEKTXT@@", "Third");
+      s.replace(dstWeekTxt, "Third");
       break;
     case 0:
-      s.replace("@@DSTWEEKTXT@@", "Last");
+      s.replace(dstWeekTxt, "Last");
       break;
   }
   s.replace("@@DSTWEEK@@", String(settings.dstWeek));
@@ -137,42 +140,43 @@ void handleRoot() {
 
 
   //dstMonth
+  String dstMonthTxt = "@@DSTMONTHTXT@@";
   switch (settings.dstMonth) {
     case 1:
-      s.replace("@@DSTMONTHTXT@@", "January");
+      s.replace(dstMonthTxt, "January");
       break;
     case 2:
-      s.replace("@@DSTMONTHTXT@@", "February");
+      s.replace(dstMonthTxt, "February");
       break;
     case 3:
-      s.replace("@@DSTMONTHTXT@@", "March");
+      s.replace(dstMonthTxt, "March");
       break;
     case 4:
-      s.replace("@@DSTMONTHTXT@@", "April");
+      s.replace(dstMonthTxt, "April");
       break;
     case 5:
-      s.replace("@@DSTMONTHTXT@@", "May");
+      s.replace(dstMonthTxt, "May");
       break;
     case 6:
-      s.replace("@@DSTMONTHTXT@@", "June");
+      s.replace(dstMonthTxt, "June");
       break;
     case 7:
-      s.replace("@@DSTMONTHTXT@@", "July");
+      s.replace(dstMonthTxt, "July");
       break;
     case 8:
-      s.replace("@@DSTMONTHTXT@@", "August");
+      s.replace(dstMonthTxt, "August");
       break;
     case 9:
-      s.replace("@@DSTMONTHTXT@@", "September");
+      s.replace(dstMonthTxt, "September");
       break;
     case 10:
-      s.replace("@@DSTMONTHTXT@@", "October");
+      s.replace(dstMonthTxt, "October");
       break;
     case 11:
-      s.replace("@@DSTMONTHTXT@@", "November");
+      s.replace(dstMonthTxt, "November");
       break;
     case 12:
-      s.replace("@@DSTMONTHTXT@@", "December");
+      s.replace(dstMonthTxt, "December");
       break;
   }
   s.replace("@@DSTMONTH@@", String(settings.dstMonth));
@@ -183,48 +187,50 @@ void handleRoot() {
   // STD
 
   //STDDayofweek
+  String stdDayOfWeekTxt = "@@STDDAYOFWEEKTXT@@";
   switch (settings.stdDayofweek) {
     case 0:
-      s.replace("@@STDDAYOFWEEKTXT@@", "Sunday");
+      s.replace(stdDayOfWeekTxt, "Sunday");
       settings.stdDayofweek = 1;
       break;
     case 1:
-      s.replace("@@STDDAYOFWEEKTXT@@", "Sunday");
+      s.replace(stdDayOfWeekTxt, "Sunday");
       break;
     case 2:
-      s.replace("@@STDDAYOFWEEKTXT@@", "Monday");
+      s.replace(stdDayOfWeekTxt, "Monday");
       break;
     case 3:
-      s.replace("@@STDDAYOFWEEKTXT@@", "Tuesday");
+      s.replace(stdDayOfWeekTxt, "Tuesday");
       break;
     case 4:
-      s.replace("@@STDDAYOFWEEKTXT@@", "Wednesday");
+      s.replace(stdDayOfWeekTxt, "Wednesday");
       break;
     case 5:
-      s.replace("@@STDDAYOFWEEKTXT@@", "Thursday");
+      s.replace(stdDayOfWeekTxt, "Thursday");
       break;
     case 6:
-      s.replace("@@STDDAYOFWEEKTXT@@", "Friday");
+      s.replace(stdDayOfWeekTxt, "Friday");
       break;
     case 7:
-      s.replace("@@STDDAYOFWEEKTXT@@", "Saturday");
+      s.replace(stdDayOfWeekTxt, "Saturday");
       break;
   }
   s.replace("@@STDDAYOFWEEK@@", String(settings.stdDayofweek));
 
   //stdWeek
+  String stdWeekTxt = "@@STDWEEKTXT@@";
   switch (settings.stdWeek) {
     case 1:
-      s.replace("@@STDWEEKTXT@@", "First");
+      s.replace(stdWeekTxt, "First");
       break;
     case 2:
-      s.replace("@@STDWEEKTXT@@", "Second");
+      s.replace(stdWeekTxt, "Second");
       break;
     case 3:
-      s.replace("@@STDWEEKTXT@@", "Third");
+      s.replace(stdWeekTxt, "Third");
       break;
     case 0:
-      s.replace("@@STDWEEKTXT@@", "Last");
+      s.replace(stdWeekTxt, "Last");
       break;
   }
   s.replace("@@STDWEEK@@", String(settings.stdWeek));
@@ -232,42 +238,43 @@ void handleRoot() {
 
 
   //stdMonth
+  String stdMonthTxt = "@@STDMONTHTXT@@";
   switch (settings.stdMonth) {
     case 1:
-      s.replace("@@STDMONTHTXT@@", "January");
+      s.replace(stdMonthTxt, "January");
       break;
     case 2:
-      s.replace("@@STDMONTHTXT@@", "February");
+      s.replace(stdMonthTxt, "February");
       break;
     case 3:
-      s.replace("@@STDMONTHTXT@@", "March");
+      s.replace(stdMonthTxt, "March");
       break;
     case 4:
-      s.replace("@@STDMONTHTXT@@", "April");
+      s.replace(stdMonthTxt, "April");
       break;
     case 5:
-      s.replace("@@STDMONTHTXT@@", "May");
+      s.replace(stdMonthTxt, "May");
       break;
     case 6:
-      s.replace("@@STDMONTHTXT@@", "June");
+      s.replace(stdMonthTxt, "June");
       break;
     case 7:
-      s.replace("@@STDMONTHTXT@@", "July");
+      s.replace(stdMonthTxt, "July");
       break;
     case 8:
-      s.replace("@@STDMONTHTXT@@", "August");
+      s.replace(stdMonthTxt, "August");
       break;
     case 9:
-      s.replace("@@STDMONTHTXT@@", "September");
+      s.replace(stdMonthTxt, "September");
       break;
     case 10:
-      s.replace("@@STDMONTHTXT@@", "October");
+      s.replace(stdMonthTxt, "October");
       break;
     case 11:
-      s.replace("@@STDMONTHTXT@@", "November");
+      s.replace(stdMonthTxt, "November");
       break;
     case 12:
-      s.replace("@@STDMONTHTXT@@", "December");
+      s.replace(stdMonthTxt, "December");
       break;
   }
   s.replace("@@STDMONTH@@", String(settings.stdMonth));
