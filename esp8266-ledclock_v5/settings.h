@@ -96,7 +96,7 @@
 //#define DEFAULT_TIMESERVER1 "1.north-america.pool.ntp.org"
 
 #define MINIMUM_INTERVAL 60
-#define DEFAULT_INTERVAL 1024
+#define DEFAULT_INTERVAL 3600
 
 #define DEFAULT_DT "EDT  "
 #define DEFAULT_ST "EST  "
