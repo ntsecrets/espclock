@@ -118,7 +118,7 @@
 #define DEFAULT_DIM 22
 #define DEFAULT_BRIGHT 7
 
-#define DEFAULT_FUDGE 1UL
+#define DEFAULT_FUDGE 0
 
 // TODO finish the defaults
 
