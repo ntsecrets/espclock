@@ -268,7 +268,9 @@ void displayClock() {
 
   if (milliseconds == 0) { //only update if it needs it (on the second)
 
-
+   if (firstSync == 0 && ntp.lastSync != 0) {
+        firstSync = ntp.lastSync;
+   }
 
 
     matrix.print(displayValue, DEC);
