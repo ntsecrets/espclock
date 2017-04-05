@@ -12,7 +12,7 @@ const char credits_page[] PROGMEM = R"=====(
   Special Thanks to:<p>
 <a href="http://www.buxtronix.net/2015/12/esp8266-based-ntp-clock.html">Ben Buxton</a> for his original design and code.<br>
 <a href="https://github.com/PaulStoffregen/Time">Paul Stoffregen</a> for his Time Library. <br>
-<a href="https://github.com/esp8266/Arduino/blob/master/tools/sdk/lwip/src/core/sntp.c">Simon Goldschmidt</a> for his SNTP code.<br>
+Ewald Kendziorra - www.kendziorra.nl for his NTP code that actually gives milliseconds!<br>
 <a href="https://en.wikipedia.org/wiki/William_F._Baker_(television)">Dr. William F. Baker</a> for his inspiration for a high precision time piece. <br>
 <p>
 This software is free software; you can redistribute it and/or<br>

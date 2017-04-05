@@ -1,4 +1,4 @@
-#define VERSION "1.5.48"
+#define VERSION "1.9.5"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -14,14 +14,14 @@ char *www_password = new char[ID.length() + 1];
 
 #include <EEPROM.h>
 #include <ESP8266WiFiMulti.h>
-#include <WiFiUdp.h>
+
 #include <ESP8266WiFi.h>
 #include <WiFiServer.h>
-#include <WiFiClient.h>
+
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-#include <NTPClient.h>
-#include <Time.h>
+#include "NtpTime.h"
+
 
 #include <ESP8266HTTPUpdateServer.h>   //OTA update stuff!!
 ESP8266HTTPUpdateServer httpUpdater;
@@ -44,7 +44,7 @@ int clockMode;
 //bool ipshown = false;
 int wificonnects = 0;
 uint8_t setupdisp = 0;
-bool synced = false;
+//bool synced = false;
 
 ESP8266WebServer server (80);
 
@@ -62,12 +62,12 @@ void handleRoot() {
   s.replace("@@SSID@@", settings.ssid);
   //s.replace("@@PSK@@", settings.psk);
   //  s.replace("@@TZ@@", String(settings.timezone));
-  s.replace("@@TIME@@", String(NTP.getTimeDate(now())));
+  s.replace("@@TIME@@", String(ntp.getTimeDate(ntp.timestamp)));
   //  s.replace("@@MIN@@", String(minute()));
   s.replace("@@NTPSRV@@", settings.timeserver);
-  s.replace("@@NTPSRV1@@", settings.timeserver1);
+  //s.replace("@@NTPSRV1@@", settings.timeserver1);
   s.replace("@@NTPINT@@", String(settings.interval));
-  s.replace("@@SYNCSTATUS@@", timeStatus() == timeSet ? "OK" : "Overdue");
+  s.replace("@@SYNCSTATUS@@", ntp.timeIsSynced ? "OK" : "Overdue");
   s.replace("@@CLOCKNAME@@", settings.name);
   s.replace("@@UPDATERESPONSE@@", httpUpdateResponse);
   /* s.replace("@@DAY@@", String(day()));
@@ -294,12 +294,12 @@ void handleRoot() {
 
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
             "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
-            "<br>Last Sync: " + String(NTP.getTimeDate(NTP.getLastSync())) + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())) + "<br>Drift: " + String(drift())+ "<br>");
-  s.replace("@@TIMESERVER1@@", "<br>Current NTP Server 1: " + String(NTP.getNTPServer(0)));
+           "<br>Last Sync: " + String(ntp.getTimeDate(ntp.lastSync))); // + "<br>First Sync: " + String(NTP.getTimeDate(NTP.getFirstSync())) + "<br>Drift: " + String(drift())+ "<br>");
+//  s.replace("@@TIMESERVER1@@", "<br>Current NTP Server 1: " + String(NTP.getNTPServer(0)));
 
-  if (sizeof(settings.timeserver1 > 0)) {
-   s.replace("@@TIMESERVER2@@", "<br>Current NTP Server 2: " + String(NTP.getNTPServer(1)));
-  }
+//  if (sizeof(settings.timeserver1 > 0)) {
+//   s.replace("@@TIMESERVER2@@", "<br>Current NTP Server 2: " + String(NTP.getNTPServer(1)));
+//  }
 
   httpUpdateResponse = "";
   server.send(200, "text/html", s);
@@ -318,8 +318,8 @@ void handleForm() {
   String t_psk = server.arg("psk");
   String t_timeserver = server.arg("ntpsrv");
   t_timeserver.toCharArray(settings.timeserver, EEPROM_TIMESERVER_LENGTH, 0);
-  t_timeserver = server.arg("ntpsrv1");
-  t_timeserver.toCharArray(settings.timeserver1, EEPROM_TIMESERVER1_LENGTH, 0);
+  //t_timeserver = server.arg("ntpsrv1");
+  //t_timeserver.toCharArray(settings.timeserver1, EEPROM_TIMESERVER1_LENGTH, 0);
   if (update_wifi == "1") {
     settings.ssid = t_ssid;
     settings.psk = t_psk;
@@ -353,19 +353,6 @@ void handleForm() {
   settings.twelvehr = server.arg("twelvehr").toInt();
 
 
-  // String tz = server.arg("timezone");
-  //  if (tz.length()) {
-  //    settings.timezone = tz.toInt();
-  //  }
-
-  /*
-    time_t newTime = time(nullptr);
-    if (newTime) {
-      setTime(newTime);
-    }   */
-
-
-
   String syncInt = server.arg("ntpint");
   settings.interval = syncInt.toInt();
 
@@ -387,18 +374,9 @@ void handleForm() {
     setupWiFi();
   }
 
-  // only re-init if something changed here
-  if (settings.interval != NTP.getPollingInterval()) {
   
-  NTP.init(settings.timeserver, UTC);
-
-  } 
-  NTP.setPollingInterval(settings.interval);
-  NTP.setNTPServer(settings.timeserver, 0);
-  if (sizeof(settings.timeserver1 > 0)) {
-    NTP.setNTPServer(settings.timeserver1, 1);
-  }
-  
+   ntp.ntpServerName = (char*)settings.timeserver;
+  ntp.syncOffset = settings.interval;
   clockMode = MODE_CLOCK;
 
 }
@@ -437,39 +415,15 @@ void setup() {
 
   httpUpdater.setup(&server, updatePath, www_username, www_password);  //ota   
  
-  
-  //httpUpdater2.setup(&server); //backdoor - remove
 
-  NTP.init(settings.timeserver, UTC);
-  NTP.setPollingInterval(settings.interval);
-
-  if (sizeof(settings.timeserver1 > 0)) {
-    NTP.setNTPServer(settings.timeserver1, 1);
-  }
-  
-
-  // this is supposed to be run when the server is synced 
-  NTP.onSyncEvent([](NTPSyncEvent_t ntpEvent) {
-    switch (ntpEvent) {
-    case NTP_EVENT_INIT:
-      break;
-    case NTP_EVENT_STOP:
-      break;
-    case NTP_EVENT_NO_RESPONSE:
-     // Serial.printf("NTP server not reachable.\n");
-      break;
-    case NTP_EVENT_SYNCHRONIZED:
-     // Serial.printf("Got NTP time: %s\n", NTP.getTimeDate(NTP.getLastSync()));
-     synced = true;
-      break;
-    }
-  });
-
+  ntp.localPort = (uint16_t)random(0xC000, 0xFFFF);          //generate random port number in range C000-FFFF
+  ntp.ntpServerName = (char*)settings.timeserver;
+  ntp.syncOffset = settings.interval;
 }
 
 void loop() {
   server.handleClient();
- // if (digitalRead(SETUP_PIN) == 0 && !ipshown) {
+ 
     if (digitalRead(SETUP_PIN) == 0) {
 
     displayIP(false);
@@ -478,13 +432,17 @@ void loop() {
     delay(1000);
     displayID();
     delay(1000);
-//    ipshown = true;
+
     digitalWrite(SETUP_PIN, HIGH);
   }
+
+ 
+  
   if (clockMode == MODE_CLOCK) {
-    if (timeStatus() != timeNotSet) {
+  //  if (ntp.timeIsSynced) {
 
       if (millis() % 10 == 0 ) {
+        ntp.addTime();
         displayClock();
         //connect wifi if not connected
         if (WiFi.status() != WL_CONNECTED) {
@@ -496,7 +454,7 @@ void loop() {
         }
       }
       //   }
-    }
+  //  }
   } else {
     //mode setup
     if (millis() % 1000 == 0) {

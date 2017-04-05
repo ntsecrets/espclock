@@ -4,7 +4,7 @@
 #include <Timezone.h>
 #include <EEPROM.h>
 //#include <time.h>
-
+#include <TimeLib.h>
 
 Adafruit_7segment matrix = Adafruit_7segment();
 Adafruit_7segment matrix2 = Adafruit_7segment();
@@ -157,7 +157,7 @@ void displayClock() {
 
   //local = myTZ.toLocal(NTP.getTime(), &tcr);
 
-  local = myTZ.toLocal(now() + settings.fudge, &tcr);
+  local = myTZ.toLocal(ntp.timestamp + settings.fudge, &tcr);
 
 
   /*  int h = hour();
@@ -214,7 +214,7 @@ void displayClock() {
   }
 
   boolean drawDots = false;
-  if (timeStatus() != timeSet && blinkColon == true) {
+  if (!ntp.timeIsSynced && blinkColon == true) {
     displayDash();
   } else {
 
@@ -272,9 +272,9 @@ void displayClock() {
 
 
     matrix.print(displayValue, DEC);
-    if (synced) {
-      matrix.writeDigitNum(4, displayValue % 10  , synced);
-      synced = false;
+    if (ntp.lastSync == ntp.timestamp) {
+      matrix.writeDigitNum(4, displayValue % 10  , true);
+     // synced = false;
     }
 
     matrix.drawColon(blinkColon);
