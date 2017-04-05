@@ -1,4 +1,4 @@
-#define VERSION "1.9.5"
+#define VERSION "1.5.50"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";

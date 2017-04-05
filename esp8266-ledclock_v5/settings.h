@@ -85,8 +85,8 @@
 #define EEPROM_12HR_OFFSET EEPROM_FUDGE_OFFSET + EEPROM_FUDGE_OFFSET_LENGTH
 #define EEPROM_12HR_OFFSET_LENGTH 1
 
-#define EEPROM_TIMESERVER1_OFFSET EEPROM_12HR_OFFSET + EEPROM_12HR_OFFSET_LENGTH
-#define EEPROM_TIMESERVER1_LENGTH 32
+//#define EEPROM_TIMESERVER1_OFFSET EEPROM_12HR_OFFSET + EEPROM_12HR_OFFSET_LENGTH
+//#define EEPROM_TIMESERVER1_LENGTH 32
 
 //#define TZRULESIZLE 15  // 15 bytes each
 
@@ -188,7 +188,7 @@ class Settings {
         strcpy(timeserver, DEFAULT_TIMESERVER);
       }
        // second (backup server)
-      strncpy(timeserver1, &buffer[EEPROM_TIMESERVER1_OFFSET], EEPROM_TIMESERVER1_LENGTH);
+   //   strncpy(timeserver1, &buffer[EEPROM_TIMESERVER1_OFFSET], EEPROM_TIMESERVER1_LENGTH);
       // can be empty
 
       // 1 DST CODE
@@ -302,7 +302,7 @@ class Settings {
       // buffer[EEPROM_TZ_OFFSET] = timezone;
       // Copy timeserver.
       strncpy((char *)&buffer[EEPROM_TIMESERVER_OFFSET], (char *)timeserver, EEPROM_TIMESERVER_LENGTH);
-      strncpy((char *)&buffer[EEPROM_TIMESERVER1_OFFSET], (char *)timeserver1, EEPROM_TIMESERVER1_LENGTH);
+    //  strncpy((char *)&buffer[EEPROM_TIMESERVER1_OFFSET], (char *)timeserver1, EEPROM_TIMESERVER1_LENGTH);
       // Copy interval.
       buffer[EEPROM_INTERVAL_OFFSET] = interval  >> 8;
       buffer[EEPROM_INTERVAL_OFFSET + 1] = interval & 0xff;
