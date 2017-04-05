@@ -9,6 +9,7 @@ const char credits_page[] PROGMEM = R"=====(
   </style>
  </head>
  <body>
+ For support and sales information, go to <a href="http://www.espclock.com">www.espclock.com</a> or email sales@espclock.com.<br>
   Special Thanks to:<p>
 <a href="http://www.buxtronix.net/2015/12/esp8266-based-ntp-clock.html">Ben Buxton</a> for his original design and code.<br>
 <a href="https://github.com/PaulStoffregen/Time">Paul Stoffregen</a> for his Time Library. <br>

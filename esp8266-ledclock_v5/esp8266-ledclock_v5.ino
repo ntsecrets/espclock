@@ -1,4 +1,4 @@
-#define VERSION "1.5.52"
+#define VERSION "1.5.53"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -354,9 +354,13 @@ void handleForm() {
 
   settings.twelvehr = server.arg("twelvehr").toInt();
 
-
-  String syncInt = server.arg("ntpint");
-  settings.interval = syncInt.toInt();
+  
+  int syncInt = server.arg("ntpint").toInt();;
+  if (syncInt < MINIMUM_INTERVAL) {
+    syncInt = MINIMUM_INTERVAL;
+  }
+  
+  settings.interval = syncInt;
 
   settings.name = server.arg("clockname");
   settings.name.replace("+", " ");
