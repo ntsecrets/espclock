@@ -1,4 +1,4 @@
-#define VERSION "1.5.50"
+#define VERSION "1.5.52"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -378,7 +378,13 @@ void handleForm() {
 
   
    ntp.ntpServerName = (char*)settings.timeserver;
+  
+  if (ntp.syncOffset != settings.interval) {
   ntp.syncOffset = settings.interval;
+  ntp.syncTheTime();  //force an immediate re-sync so that the interval is updated
+  }
+  
+  
   clockMode = MODE_CLOCK;
 
 }

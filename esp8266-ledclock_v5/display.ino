@@ -274,7 +274,7 @@ void displayClock() {
 
 
     matrix.print(displayValue, DEC);
-    if (ntp.lastSync == ntp.timestamp) {
+    if (ntp.lastSync + 1 == ntp.timestamp) {
       matrix.writeDigitNum(4, displayValue % 10  , true);
      // synced = false;
     }
