@@ -302,7 +302,7 @@ void handleRoot() {
 
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
             "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
-           "<br>Last Sync: " + String(ntp.getTimeDate(ntp.lastSync))+ "<br>First Sync: " + String(ntp.getTimeDate(firstSync)) + "<br>");
+           "<br>Last Sync: " + String(ntp.getTimeDate(myTZ.toLocal(ntp.lastSync)))+ "<br>First Sync: " + String(ntp.getTimeDate(myTZ.toLocal(firstSync))) + "<br>");
 //  s.replace("@@TIMESERVER1@@", "<br>Current NTP Server 1: " + String(NTP.getNTPServer(0)));
 
 //  if (sizeof(settings.timeserver1 > 0)) {
