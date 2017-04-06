@@ -72,7 +72,8 @@ void displayAP() {
     digits[2] = 0x18;
     digits[3] = 0x18;  */
 
-
+  clearDigits();
+  
   matrix.writeDigitRaw(1, letter_a);
   matrix.writeDigitRaw(3, letter_p);
 
@@ -330,6 +331,15 @@ void display8s() {
   matrix2.print(8888, DEC);
    matrix.drawColon(true);
    matrix2.drawColon(true);
+  display();
+
+}
+
+
+void displayVersion() {
+  clearDigits();
+  matrix.writeDigitNum(4, VERSION_MAJOR, true);
+  matrix2.print( VERSION_MINOR, DEC);
   display();
 
 }

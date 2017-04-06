@@ -1,4 +1,5 @@
-#define VERSION "1.5.54"
+const int VERSION_MAJOR = 5;
+const int VERSION_MINOR = 55;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -81,7 +82,7 @@ void handleRoot() {
   /* s.replace("@@DAY@@", String(day()));
     s.replace("@@MONTH@@", String(month()));
     s.replace("@@YEAR@@", String(year()));  */
-  s.replace("@@VERSION@@", VERSION);
+  s.replace("@@VERSION@@", String(VERSION_MAJOR) + "." + String(VERSION_MINOR));
   s.replace("@@BUILDDATE@@", __DATE__);
   s.replace("@@BUILDTIME@@", __TIME__);
 
@@ -502,15 +503,18 @@ void setupWiFi() {
   settings.Load();
   // Wait up to 5s for GPIO0 to go low to enter AP/setup mode.
   //displayBusy(0);
-  display8s();  // display test for 1 second (first 1000 ms)
-  
+  //display8s();  // display test for 1 second (first 1000 ms)
+  displayVersion();
   while (millis() < 5000) {
-    if (millis() > 1000) {
-      displayID();
+    if (millis() > 1000 && millis() < 4000) {
+        display8s();
+      }
+    if (millis() > 4000) {
+        displayID();
     }
     if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
-
-      return setupAP();
+  
+    return setupAP();
     }
     delay(50);
   }
