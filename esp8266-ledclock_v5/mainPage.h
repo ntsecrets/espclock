@@ -23,7 +23,7 @@ const char MAIN_page[] PROGMEM = R"=====(
 <form method="post" action="/form">
 <table>
 <tr><td colspan=2 class=heading>Status</td></tr>
-<tr><td>Current time(UTC):</td><td><b>@@TIME@@</b></td></tr>
+<tr><td>Current time:</td><td><b>@@TIME@@</b></td></tr>
 <tr><td>Sync Status:</td><td>@@SYNCSTATUS@@</td></tr>
 <tr><td>Wifi Reconnects:</td><td>@@WIFICONNECTS@@</td></tr>
 <tr><td>Signal:</td><td>@@SIGNAL@@ db</td></tr>
@@ -127,7 +127,7 @@ DST Hour:</td>
 DST Offset:
 </td>
 <td>
-<input name=dstOffset type=text value=@@DSTOFFSET@@>
+<input name=dstOffset type=text value=@@DSTOFFSET@@>m
 </td>
 </tr>
 
@@ -218,7 +218,7 @@ STD Hour:</td>
 STD Offset:
 </td>
 <td>
-<input name=stdOffset type=text value=@@STDOFFSET@@>
+<input name=stdOffset type=text value=@@STDOFFSET@@>m
 </td>
 </tr>
 <tr>

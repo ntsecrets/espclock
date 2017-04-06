@@ -1,4 +1,4 @@
-#define VERSION "1.5.53"
+#define VERSION "1.5.54"
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -54,6 +54,12 @@ String httpUpdateResponse;
 
 //time_t prevDisplay = 0;
 
+TimeChangeRule DT = settings.LoadDT();
+TimeChangeRule ST = settings.LoadST();
+
+TimeChangeRule *tcr;
+Timezone myTZ( DT, ST);
+
 void handleRoot() {
 
   if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
@@ -64,7 +70,7 @@ void handleRoot() {
   s.replace("@@SSID@@", settings.ssid);
   //s.replace("@@PSK@@", settings.psk);
   //  s.replace("@@TZ@@", String(settings.timezone));
-  s.replace("@@TIME@@", String(ntp.getTimeDate(ntp.timestamp)));
+  s.replace("@@TIME@@", String(ntp.getTimeDate(myTZ.toLocal(ntp.timestamp))));
   //  s.replace("@@MIN@@", String(minute()));
   s.replace("@@NTPSRV@@", settings.timeserver);
   //s.replace("@@NTPSRV1@@", settings.timeserver1);
@@ -558,6 +564,7 @@ uint8_t conncount = 100;
   displayIP(false);
   delay(1000);
   displayIP(true);
+  delay(1000);
 }
 
 void setupAP() {

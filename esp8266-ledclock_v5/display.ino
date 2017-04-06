@@ -41,11 +41,7 @@ time_t local;
 
 //Timezone myTZ(600);
 
-TimeChangeRule DT = settings.LoadDT();
-TimeChangeRule ST = settings.LoadST();
 
-TimeChangeRule *tcr;
-Timezone myTZ( DT, ST);
 
 
 
