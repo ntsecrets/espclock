@@ -73,7 +73,7 @@ void displayAP() {
     digits[3] = 0x18;  */
 
   clearDigits();
-  
+
   matrix.writeDigitRaw(1, letter_a);
   matrix.writeDigitRaw(3, letter_p);
 
@@ -191,9 +191,9 @@ void displayClock() {
   // value, like 3:30 turns into 330, by multiplying the hour by
   // 100 and then adding the minutes.
   displayValue = h * 100 + m;
- 
-    // Do 24 hour to 12 hour format conversion when required.
-    if (settings.twelvehr != 0) {
+
+  // Do 24 hour to 12 hour format conversion when required.
+  if (settings.twelvehr != 0) {
     // Handle when hours are past 12 by subtracting 12 hours (1200 value).
     if (h > 12) {
       displayValue -= 1200;
@@ -202,7 +202,7 @@ void displayClock() {
     else if (h == 0) {
       displayValue += 1200;
     }
-    }  
+  }
 
   if (s % 2 == 0) {
     blinkColon = true;
@@ -237,61 +237,60 @@ void displayClock() {
       matrix2.writeDigitNum(3, 0);
     }
 
-  }
-
-  // matrix2.print( milliseconds, DEC);
-
-
-  //  handle milliseconds
-
-
-  milliseconds = (millis() - timeStamp) / 10;
 
 
 
-  if (milliseconds > 99 || lastsecond < s) {
-    milliseconds = 0;
-    timeStamp = millis();
+    //  handle milliseconds
 
-  }
+
+    milliseconds = (millis() - timeStamp) / 10;
+
+
+
+    if (milliseconds > 99 || lastsecond < s) {
+      milliseconds = 0;
+      timeStamp = millis();
+
+    }
 
 
 
 
 
-  lastsecond = s;
+    lastsecond = s;
 
 
 
-  if (milliseconds == 0) { //only update if it needs it (on the second)
+    if (milliseconds == 0) { //only update if it needs it (on the second)
 
-   if (firstSync == 0 && ntp.lastSync != 0) {
+      if (firstSync == 0 && ntp.lastSync != 0) {
         firstSync = ntp.lastSync;
-   }
+      }
 
 
-    matrix.print(displayValue, DEC);
-    if (ntp.lastSync + 1 == ntp.timestamp) {
-      matrix.writeDigitNum(4, displayValue % 10  , true);
-     // synced = false;
-    }
+      matrix.print(displayValue, DEC);
+      if (ntp.lastSync + 1 == ntp.timestamp) {
+        matrix.writeDigitNum(4, displayValue % 10  , true);
+        // synced = false;
+      }
 
-    matrix.drawColon(blinkColon);
+      matrix.drawColon(blinkColon);
 
-    // set this back to false, so its on for 1 second (I hope)
+      // set this back to false, so its on for 1 second (I hope)
 
-    //0134
-    // pad the minutes
-    if (m < 10) {
-      matrix.writeDigitNum(3, 0);
-    }
-    // need 00 for when its 0
-    if (h == 0) {
-      matrix.writeDigitNum(1, 0);
+      //0134
+      // pad the minutes
+      if (m < 10) {
+        matrix.writeDigitNum(3, 0);
+      }
+      // need 00 for when its 0
+      if (h == 0) {
+        matrix.writeDigitNum(1, 0);
+      }
+
     }
 
   }
-
 
   matrix.writeDisplay();
 
@@ -314,7 +313,7 @@ void setupDisplay() {
 
 
 void displayID() {
-  
+
   uint16_t ua, ub;
   ua = (uint16_t) (ESP.getChipId() >> 16);
   ub = (uint16_t) (ESP.getChipId() & 0x0000FFFFuL);
@@ -329,8 +328,8 @@ void displayID() {
 void display8s() {
   matrix.print(8888, DEC);
   matrix2.print(8888, DEC);
-   matrix.drawColon(true);
-   matrix2.drawColon(true);
+  matrix.drawColon(true);
+  matrix2.drawColon(true);
   display();
 
 }

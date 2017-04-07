@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 55;
+const int VERSION_MINOR = 57;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -71,7 +71,7 @@ void handleRoot() {
   s.replace("@@SSID@@", settings.ssid);
   //s.replace("@@PSK@@", settings.psk);
   //  s.replace("@@TZ@@", String(settings.timezone));
-  s.replace("@@TIME@@", String(ntp.getTimeDate(myTZ.toLocal(ntp.timestamp))));
+  s.replace("@@TIME@@", String(tcr -> abbrev) + " " + String(ntp.getTimeDate(myTZ.toLocal(ntp.timestamp))));
   //  s.replace("@@MIN@@", String(minute()));
   s.replace("@@NTPSRV@@", settings.timeserver);
   //s.replace("@@NTPSRV1@@", settings.timeserver1);
