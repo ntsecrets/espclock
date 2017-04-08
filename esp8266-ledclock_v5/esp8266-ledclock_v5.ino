@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 57;
+const int VERSION_MINOR = 60;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -487,6 +487,10 @@ void loop() {
               break;
         case 2:
               displayIP(true);
+              setupdisp++;
+              break;
+        case 3:
+              display8s();
               setupdisp = 0;
               break;
         }
@@ -506,12 +510,13 @@ void setupWiFi() {
   //display8s();  // display test for 1 second (first 1000 ms)
   displayVersion();
   while (millis() < 5000) {
-    if (millis() > 1000 && millis() < 4000) {
-        display8s();
-      }
-    if (millis() > 4000) {
-        displayID();
-    }
+      if (millis() < 2000 && millis() > 1000) {
+          display8s();
+      }else if (millis() > 3000) {
+          displayID();
+        }
+
+    
     if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
   
     return setupAP();

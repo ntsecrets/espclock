@@ -284,7 +284,7 @@ void displayClock() {
         matrix.writeDigitNum(3, 0);
       }
       // need 00 for when its 0
-      if (h == 0) {
+      if (h == 0 && settings.twelvehr == 0) {  //only do this when in 24 hour mode
         matrix.writeDigitNum(1, 0);
       }
 
