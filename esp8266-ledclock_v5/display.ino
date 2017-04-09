@@ -173,7 +173,7 @@ void displayClock() {
       } else {  // skip over 59 ok so this doesn't actually skip over 59 but it does remove the second at midnight - going back is less likely
         h = hour(local + 1);
         m = minute(local + 1);
-        s = 0;
+        s = 1;
       }
 
       leapApplied = true;
