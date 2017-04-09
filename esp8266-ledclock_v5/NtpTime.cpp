@@ -61,17 +61,22 @@ void NTP::syncTheTime() {
           2: Last minute of the day has 59 seconds
           3: Clock is unsynchronized
        */
-      if (CHECK_BIT(pcktBuf[0],1)) {
+      if (CHECK_BIT(pcktBuf[0],7)) {
          ntp.LI = 2;
          
       }
-      if (CHECK_BIT(pcktBuf[0],2)) {
+      if (CHECK_BIT(pcktBuf[0],6)) {
          ntp.LI = 1;
          
       }
 
-      if (CHECK_BIT(pcktBuf[0],1) && CHECK_BIT(pcktBuf[0],2)) {
+      if (CHECK_BIT(pcktBuf[0],6) && CHECK_BIT(pcktBuf[0],7)) {
          ntp.LI = 3;
+         
+      }
+
+       if (!CHECK_BIT(pcktBuf[0],6) && !CHECK_BIT(pcktBuf[0],7)) {
+         ntp.LI = 0;
          
       }
       
