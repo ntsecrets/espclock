@@ -7,6 +7,8 @@
 #include "NtpTime.h"
 #include <TimeLib.h>
 
+#define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
+
 NTP ntp = NTP(); 
 WiFiUDP Udp;
 
@@ -48,6 +50,31 @@ void NTP::syncTheTime() {
       ntp.syncTime = ntp.timestamp + ntp.syncOffset;
       ntp.timeIsSynced = true;
       lastSync = ntp.timestamp;
+
+
+      // leap indicator stuff
+      /* checking just the bits of packet 0 although I bet there is a better way to do this
+       *    Leap Indicator (2 bits)
+          This field indicates whether the last minute of the current day is to have a leap second applied. The field values follow:
+          0: No leap second adjustment
+          1: Last minute of the day has 61 seconds
+          2: Last minute of the day has 59 seconds
+          3: Clock is unsynchronized
+       */
+      if (CHECK_BIT(pcktBuf[0],1)) {
+         ntp.LI = 2;
+         
+      }
+      if (CHECK_BIT(pcktBuf[0],2)) {
+         ntp.LI = 1;
+         
+      }
+
+      if (CHECK_BIT(pcktBuf[0],1) && CHECK_BIT(pcktBuf[0],2)) {
+         ntp.LI = 3;
+         
+      }
+      
       break;
     }
   }

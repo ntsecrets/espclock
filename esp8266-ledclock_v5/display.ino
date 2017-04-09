@@ -22,6 +22,7 @@ bool blinkColon = false;
 uint16_t milliseconds;
 long unsigned int timeStamp = 0;
 int lastsecond = 0;
+bool leapApplied = false;
 time_t local;
 
 //set up the timezone stuff
@@ -149,22 +150,64 @@ void displayIP(bool half) {
 
 void displayClock() {
   //might need this for updating without restart
-
+  int h = 0;
+  int m = 0;
+  int s = 0;
 
 
   //local = myTZ.toLocal(NTP.getTime(), &tcr);
 
   local = myTZ.toLocal(ntp.timestamp + settings.fudge, &tcr);
 
+//ntp.LI = 2;
 
-  /*  int h = hour();
-    int m = minute();
-    int s = second();    */
+  //leap second?  Work in progress!
+  if (ntp.LI != 0 && ntp.LI != 3) {
 
-  int h = hour(local);
-  int m = minute(local);
-  int s = second(local);
+    if (hour(ntp.timestamp + settings.fudge) == 0 && minute(ntp.timestamp + settings.fudge) == 0 && second(ntp.timestamp + settings.fudge) == 0) {  //is it midnight UTC?
 
+      if (ntp.LI == 1) {
+        h = hour(local - 1);
+        m = minute(local - 1);
+        s = 60;
+      } else {  // skip over 59 ok so this doesn't actually skip over 59 but it does remove the second at midnight - going back is less likely
+        h = hour(local + 1);
+        m = minute(local + 1);
+        s = 0;
+      }
+
+      leapApplied = true;
+
+    } else {
+      if (leapApplied) {
+        // sub 1 second to time
+       if (ntp.LI == 1) {
+        h = hour(local - 1);
+        m = minute(local - 1);
+        s = second(local - 1);
+      } else {  // skip over 59
+        h = hour(local + 1);
+        m = minute(local + 1);
+        s = second(local + 1);
+      }
+
+      } else {  // day leading up to leap second (normal time)
+        h = hour(local);
+        m = minute(local);
+        s = second(local);
+      }
+
+
+    }
+
+  } else {   //normal operation
+    leapApplied = false;
+
+    h = hour(local);
+    m = minute(local);
+    s = second(local);
+
+  }
 
   int displayValue;
 

@@ -17,6 +17,7 @@ public:
   unsigned int milliseconds;  // used for extended timestamp (3 digits)  
   unsigned int syncOffset;    // offset in sec to sync the time
   boolean timeIsSynced;       // is the clock synced?; test it before using the time after a reset
+  uint8_t LI;                 // leap indicator!
   time_t lastSync;
   void addMilli();            // update ms
   void syncTheTime();         // sync timestamp and millis
