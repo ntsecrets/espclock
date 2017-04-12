@@ -92,7 +92,7 @@
 
 
 
-#define DEFAULT_TIMESERVER "0.north-america.pool.ntp.org"
+#define DEFAULT_TIMESERVER "0.espclock.pool.ntp.org"
 //#define DEFAULT_TIMESERVER1 "1.north-america.pool.ntp.org"
 
 #define MINIMUM_INTERVAL 60
