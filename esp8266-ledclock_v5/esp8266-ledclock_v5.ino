@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 66;
+const int VERSION_MINOR = 67;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -13,7 +13,7 @@ char *www_password = new char[ID.length() + 1];
 #include "credits.h"
 
 #include <EEPROM.h>
-#include <ESP8266WiFiMulti.h>
+//#include <ESP8266WiFiMulti.h>  //not sure what this was for!!
 
 #include <ESP8266WiFi.h>
 #include <WiFiServer.h>
