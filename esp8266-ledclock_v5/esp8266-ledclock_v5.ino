@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 63;
+const int VERSION_MINOR = 64;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
