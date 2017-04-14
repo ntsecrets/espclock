@@ -254,13 +254,9 @@ void displayClock() {
   }
 
   boolean drawDots = false;
-  if (!ntp.timeIsSynced && blinkColon == true) {
-    displayDash();
-  } else {
-
-    //milliseconds = (millis() - timeStamp) / 10;
-
-
+ // if (!ntp.timeIsSynced && blinkColon == true) {
+ //   displayDash();
+ // } else {
 
 
     matrix2.print(s * 100 + milliseconds, DEC);
@@ -312,8 +308,9 @@ void displayClock() {
 
 
       matrix.print(displayValue, DEC);
-      if (ntp.lastSync + 1 == ntp.timestamp) {
-        matrix.writeDigitNum(4, displayValue % 10  , true);
+      if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced) {
+       matrix.writeDigitNum(4, displayValue % 10  , true);
+      
         // synced = false;
       }
 
@@ -329,11 +326,12 @@ void displayClock() {
       // need 00 for when its 0
       if (h == 0 && settings.twelvehr == 0) {  //only do this when in 24 hour mode
         matrix.writeDigitNum(1, 0);
+        matrix.writeDigitNum(0, 0);  //bill likes 00 at midnight
       }
 
     }
 
-  }
+ // }
 
   matrix.writeDisplay();
 

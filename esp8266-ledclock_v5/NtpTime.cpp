@@ -29,7 +29,7 @@ void NTP::syncTheTime() {
   Udp.beginPacket(ntp.timeServerIP, 123);  // requests to port 123
   Udp.write(pcktBuf, 48);  // send the packed
   Udp.endPacket();
-  uint32_t timeout = millis() + 2000;
+  uint32_t timeout = millis() + 1000;
   while (millis() < timeout) {
     if (Udp.parsePacket() >= 48) {  // get udp packet
       Udp.read(pcktBuf, 48);  // get the time data
@@ -81,8 +81,16 @@ void NTP::syncTheTime() {
       }
       
       break;
+    } 
+      
     }
-  }
+    if (!ntp.timeIsSynced) {
+    Udp.stop();
+      // didn't get a packet
+      // retry in 60 seconds
+      ntp.syncTime = ntp.syncTime + 60;
+    }
+  
 }
 
 void NTP::getTimestamp() { // timestamp in millis (UNIX * 1000)
