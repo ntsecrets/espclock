@@ -543,6 +543,7 @@ void setupSTA()
   settings.ssid.toCharArray(ssid, 32);
   settings.psk.toCharArray(psk, 64);
   WiFi.disconnect();  //this seems to help with the initial connect after a brief power interruption
+  WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
   if (settings.psk.length()) {
     WiFi.begin(ssid, psk);
   } else {
@@ -573,7 +574,7 @@ uint8_t conncount = 100;
   // stopDisplayBusy();
   // displayDash();
 
-  WiFi.hostname(String(ESP.getChipId(), HEX).c_str());
+  
   
   displayIP(false);
   delay(1000);
