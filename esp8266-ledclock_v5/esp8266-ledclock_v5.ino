@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 65;
+const int VERSION_MINOR = 66;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -19,7 +19,7 @@ char *www_password = new char[ID.length() + 1];
 #include <WiFiServer.h>
 
 #include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
+//#include <ESP8266mDNS.h>
 #include "NtpTime.h"
 
 
@@ -415,12 +415,14 @@ void setup() {
 
   //char hostname = char(ESP.getChipId());
 
-  MDNS.begin(String(ESP.getChipId(), HEX).c_str());
-  MDNS.addService("http", "tcp", 80);
+  
 
   setupDisplay();
   pinMode(SETUP_PIN, INPUT_PULLUP);
   digitalWrite(SETUP_PIN, HIGH);
+
+//  MDNS.begin("espclock");
+//  MDNS.addService("http", "tcp", 80);
 
   server.begin();
 
@@ -570,6 +572,9 @@ uint8_t conncount = 100;
   }
   // stopDisplayBusy();
   // displayDash();
+
+  WiFi.hostname(String(ESP.getChipId(), HEX).c_str());
+  
   displayIP(false);
   delay(1000);
   displayIP(true);
@@ -578,6 +583,8 @@ uint8_t conncount = 100;
 
 void setupAP() {
   clockMode = MODE_SETUP;
+
+  
   WiFi.mode(WIFI_AP);
   WiFi.softAP((String(WIFI_AP_NAME) + String(ESP.getChipId(), HEX)).c_str(), WPA_PSK);
   displayAP();
