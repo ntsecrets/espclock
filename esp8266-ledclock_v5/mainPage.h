@@ -297,7 +297,7 @@ Dim End Hour:</td>
 <div class="update">@@UPDATERESPONSE@@</div>
 <p>
 @@DEBUG@@
-
+@@LASTIP@@
 <p>
 <a href="/">Refresh Page</a>
 <p>

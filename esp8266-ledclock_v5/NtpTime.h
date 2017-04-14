@@ -23,6 +23,7 @@ public:
   void syncTheTime();         // sync timestamp and millis
   void addTime();
   const char* getTimeDate(time_t _time);
+  IPAddress timeServerIP;     // for troubleshooting - get the last IP used
 private:
   unsigned long difference;
   unsigned long _stop;

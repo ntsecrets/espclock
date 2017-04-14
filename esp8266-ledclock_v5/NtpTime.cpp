@@ -14,8 +14,8 @@ WiFiUDP Udp;
 
 void NTP::syncTheTime() {
   ntp.timeIsSynced = false;
-  IPAddress timeServerIP; // NTP server address
-  WiFi.hostByName(ntp.ntpServerName, timeServerIP);  // get address from pool
+  //IPAddress timeServerIP; // NTP server address
+  WiFi.hostByName(ntp.ntpServerName, ntp.timeServerIP);  // get address from pool
   Udp.begin(ntp.localPort);
   byte pcktBuf[48];
   memset(pcktBuf, 0, 48);
@@ -26,7 +26,7 @@ void NTP::syncTheTime() {
   pcktBuf[13] = 0x4E;
   pcktBuf[14] = 49;
   pcktBuf[15] = 52;
-  Udp.beginPacket(timeServerIP, 123);  // requests to port 123
+  Udp.beginPacket(ntp.timeServerIP, 123);  // requests to port 123
   Udp.write(pcktBuf, 48);  // send the packed
   Udp.endPacket();
   uint32_t timeout = millis() + 2000;

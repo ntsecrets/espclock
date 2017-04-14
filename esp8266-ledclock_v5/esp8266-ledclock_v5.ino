@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 62;
+const int VERSION_MINOR = 63;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -305,6 +305,7 @@ void handleRoot() {
            "<br>Last Sync: " + String(ntp.getTimeDate(myTZ.toLocal(ntp.lastSync)))+ "<br>First Sync: " + String(ntp.getTimeDate(myTZ.toLocal(firstSync))) + "<br>LI: " + String(ntp.LI));
 //  s.replace("@@TIMESERVER1@@", "<br>Current NTP Server 1: " + String(NTP.getNTPServer(0)));
 
+   s.replace("@@LASTIP@@", "<br>Last NTP Server IP Used: " + String(ntp.timeServerIP[0]) + "." + String(ntp.timeServerIP[1]) + "." + String(ntp.timeServerIP[2]) + "." + String(ntp.timeServerIP[3]));
 //  if (sizeof(settings.timeserver1 > 0)) {
 //   s.replace("@@TIMESERVER2@@", "<br>Current NTP Server 2: " + String(NTP.getNTPServer(1)));
 //  }
