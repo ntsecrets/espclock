@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 67;
+const int VERSION_MINOR = 68;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -22,10 +22,16 @@ char *www_password = new char[ID.length() + 1];
 //#include <ESP8266mDNS.h>
 #include "NtpTime.h"
 
+#include <DNSServer.h>  // for setting up
+
 
 #include <ESP8266HTTPUpdateServer.h>   //OTA update stuff!!
 ESP8266HTTPUpdateServer httpUpdater;
 
+// dns server stuff - setup mode
+DNSServer dnsServer;
+IPAddress apIP(192, 168, 4, 1);
+const byte DNS_PORT = 53;
 
 //ESP8266HTTPUpdateServer httpUpdater2; //temporary backdoor
 
@@ -59,6 +65,12 @@ TimeChangeRule ST = settings.LoadST();
 
 TimeChangeRule *tcr;
 Timezone myTZ( DT, ST);
+
+void handleNotFound() {
+server.sendHeader("Location", String("/"), true);
+server.send ( 302, "text/plain", ""); 
+  
+}
 
 void handleRoot() {
 
@@ -424,6 +436,8 @@ void setup() {
 //  MDNS.begin("espclock");
 //  MDNS.addService("http", "tcp", 80);
 
+  server.onNotFound ( handleNotFound );
+
   server.begin();
 
   setupWiFi();
@@ -477,6 +491,10 @@ void loop() {
       //   }
   //  }
   } else {
+
+    dnsServer.processNextRequest();
+
+    
     //mode setup
     if (millis() % 1000 == 0) {
       switch (setupdisp) {
@@ -588,6 +606,11 @@ void setupAP() {
   
   WiFi.mode(WIFI_AP);
   WiFi.softAP((String(WIFI_AP_NAME) + String(ESP.getChipId(), HEX)).c_str(), WPA_PSK);
+
+    // if DNSServer is started with "*" for domain name, it will reply with
+  // provided IP to all DNS request
+  dnsServer.start(DNS_PORT, "*", apIP);
+  
   displayAP();
 }
 
