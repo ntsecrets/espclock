@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 68;
+const int VERSION_MINOR = 69;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -493,7 +493,7 @@ void loop() {
   } else {
 
     dnsServer.processNextRequest();
-
+    yield();
     
     //mode setup
     if (millis() % 1000 == 0) {
@@ -603,9 +603,10 @@ uint8_t conncount = 100;
 void setupAP() {
   clockMode = MODE_SETUP;
 
+  int channel = random(1,12);
   
   WiFi.mode(WIFI_AP);
-  WiFi.softAP((String(WIFI_AP_NAME) + String(ESP.getChipId(), HEX)).c_str(), WPA_PSK);
+  WiFi.softAP((String(WIFI_AP_NAME) + String(ESP.getChipId(), HEX)).c_str(), WPA_PSK, channel);
 
     // if DNSServer is started with "*" for domain name, it will reply with
   // provided IP to all DNS request
