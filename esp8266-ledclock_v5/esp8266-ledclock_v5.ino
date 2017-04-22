@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 70;
+const int VERSION_MINOR = 71;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -105,6 +105,12 @@ void handleRoot() {
   s.replace("@@12HRMODE@@", "checked");
   } else {
     s.replace("@@12HRMODE@@", "");
+  }
+
+  if (settings.syncind == 1) {
+  s.replace("@@SYNCIND@@", "checked");
+  } else {
+    s.replace("@@SYNCIND@@", "");
   }
 
   //dstDayofweek
@@ -372,6 +378,8 @@ void handleForm() {
 
 
   settings.twelvehr = server.arg("twelvehr").toInt();
+
+  settings.syncind = server.arg("syncind").toInt();
 
   
   int syncInt = server.arg("ntpint").toInt();;

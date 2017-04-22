@@ -309,9 +309,20 @@ void displayClock() {
 
       matrix.print(displayValue, DEC);
       if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced) {
-       matrix.writeDigitNum(4, displayValue % 10  , true);
+        if (!settings.syncind) {   //option in UI to invert the display of the dot if it is synced or not
+         matrix.writeDigitNum(4, displayValue % 10  , true);
+        }
+         else
+         {
+          matrix.writeDigitNum(4, displayValue % 10  , false);
+         }
       
         // synced = false;
+      } else {
+        // turn on if syncind is enabled
+        if (settings.syncind) { 
+          matrix.writeDigitNum(4, displayValue % 10  , true);
+        }
       }
 
       matrix.drawColon(blinkColon);

@@ -85,6 +85,9 @@
 #define EEPROM_12HR_OFFSET EEPROM_FUDGE_OFFSET + EEPROM_FUDGE_OFFSET_LENGTH
 #define EEPROM_12HR_OFFSET_LENGTH 1
 
+#define EEPROM_SYNCIND_OFFSET EEPROM_12HR_OFFSET + EEPROM_12HR_OFFSET_LENGTH
+#define EEPROM_SYNCIND_OFFSET_LENGTH 1
+
 //#define EEPROM_TIMESERVER1_OFFSET EEPROM_12HR_OFFSET + EEPROM_12HR_OFFSET_LENGTH
 //#define EEPROM_TIMESERVER1_LENGTH 32
 
@@ -260,6 +263,7 @@ class Settings {
       bright = int(buffer[EEPROM_BRIGHT_OFFSET]);
 
       twelvehr = int(buffer[EEPROM_12HR_OFFSET]);
+      syncind = int(buffer[EEPROM_SYNCIND_OFFSET]);
 
      
 
@@ -351,6 +355,7 @@ class Settings {
       buffer[EEPROM_DIM_OFFSET] = dim;
       buffer[EEPROM_BRIGHT_OFFSET] = bright;
       buffer[EEPROM_12HR_OFFSET] = twelvehr;
+      buffer[EEPROM_SYNCIND_OFFSET] = syncind;
 
      // buffer[EEPROM_FUDGE_OFFSET] = fudge;
 
@@ -436,6 +441,7 @@ class Settings {
       buffer[EEPROM_BRIGHT_OFFSET] = DEFAULT_BRIGHT;
 
       buffer[EEPROM_12HR_OFFSET] = 0;
+      buffer[EEPROM_SYNCIND_OFFSET] = 0;
 
        // convert from an unsigned long int to a 4-byte array
       buffer[EEPROM_FUDGE_OFFSET] = (int)((DEFAULT_FUDGE >> 24) & 0xFF) ;
@@ -520,6 +526,7 @@ class Settings {
     uint8_t bright;
 
     uint8_t twelvehr;
+    uint8_t syncind;  //sync indicator option
 
     int fudge;
 
