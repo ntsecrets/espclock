@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 71;
+const int VERSION_MINOR = 72;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -10,7 +10,7 @@ char *www_password = new char[ID.length() + 1];
 
 
 #include <Timezone.h>
-#include "credits.h"
+
 
 #include <EEPROM.h>
 //#include <ESP8266WiFiMulti.h>  //not sure what this was for!!
@@ -72,6 +72,101 @@ server.send ( 302, "text/plain", "");
   
 }
 
+String GenerateMonthList(uint8_t SelectedItem, String Setting){
+    String ret;
+    char *months = "JanFebMarAprMayJunJulAugSepOctNovDec";
+    
+    // what we want to return basically is 
+    // <option value="1">January</option>  and so on
+    char monthchar[3];
+    
+
+    ret = "<select name=" + Setting + ">";
+    uint8_t i;
+    for (i = 0; i < 12; i++){
+       memcpy(monthchar, &months[i * 3], 3);
+       monthchar[3] = '\0';
+       ret = ret + "<option value=\"" + String(i + 1) + "\"";
+       if (i == SelectedItem - 1) {
+          ret = ret + " selected ";
+        
+       }
+       ret = ret + ">" + monthchar + "</option>";
+         
+    }
+
+    ret = ret + "</select>";
+
+    return ret;
+
+  
+}
+
+String GenerateHourList(uint8_t SelectedItem, String Setting){
+  String ret;
+  ret = "<select name=" + Setting + ">";
+  uint8_t i;
+  for (i = 0; i < 23; i++) {
+    ret = ret + "<option value=\"" + String(i) + "\"";
+    if (i == SelectedItem) {
+      ret = ret + " selected ";
+    }
+
+    ret = ret + ">" + String(i) + "</option>";
+  }
+
+  ret = ret + "</select>";
+
+    return ret;
+
+}
+
+String GenerateDayList(uint8_t SelectedItem, String Setting){
+  String ret;
+  char *days = "SunMonTueWedThrFriSat";
+  char daychar[3];
+  ret = "<select name=" + Setting + ">";
+  uint8_t i;
+  for (i = 0; i < 7; i++) {
+    memcpy(daychar, &days[i * 3], 3);
+    daychar[3] = '\0';
+    ret = ret + "<option value=\"" + String(i + 1) + "\"";
+    if (i == SelectedItem - 1) {
+      ret = ret + " selected ";
+    }
+
+    ret = ret + ">" + daychar + "</option>";
+  }
+
+  ret = ret + "</select>";
+
+    return ret;
+
+}
+
+String GenerateWeekList(uint8_t SelectedItem, String Setting){
+  String ret;
+  char *weeks = "Lst1st2nd3rd4th";
+  char weekchar[3];
+  ret = "<select name=" + Setting + ">";
+  uint8_t i;
+  for (i = 0; i < 5; i++) {
+    memcpy(weekchar, &weeks[i * 3], 3);
+    weekchar[3] = '\0';
+    ret = ret + "<option value=\"" + String(i) + "\"";
+    if (i == SelectedItem) {
+      ret = ret + " selected ";
+    }
+
+    ret = ret + ">" + weekchar + "</option>";
+  }
+
+  ret = ret + "</select>";
+
+    return ret;
+
+}
+
 void handleRoot() {
 
   if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
@@ -114,203 +209,34 @@ void handleRoot() {
   }
 
   //dstDayofweek
-  String dstDayofWeekTxt = "@@DSTDAYOFWEEKTXT@@";
-  switch (settings.dstDayofweek) {
-    case 0:  //default
-      s.replace(dstDayofWeekTxt, "Sunday");
-      settings.dstDayofweek = 1;
-      break;
-    case 1:
-      s.replace(dstDayofWeekTxt, "Sunday");
-      break;
-    case 2:
-      s.replace(dstDayofWeekTxt, "Monday");
-      break;
-    case 3:
-      s.replace(dstDayofWeekTxt, "Tuesday");
-      break;
-    case 4:
-      s.replace(dstDayofWeekTxt, "Wednesday");
-      break;
-    case 5:
-      s.replace(dstDayofWeekTxt, "Thursday");
-      break;
-    case 6:
-      s.replace(dstDayofWeekTxt, "Friday");
-      break;
-    case 7:
-      s.replace(dstDayofWeekTxt, "Saturday");
-      break;
-  }
-  s.replace("@@DSTDAYOFWEEK@@", String(settings.dstDayofweek));
+  
+  s.replace("@@DSTDAYOFWEEK@@", GenerateDayList(settings.dstDayofweek, "dstDayofweek"));
 
   String dstWeekTxt = "@@DSTWEEKTXT@@";
 
-  //dstWeek
-  switch (settings.dstWeek) {
-    case 1:
-      s.replace(dstWeekTxt, "First");
-      break;
-    case 2:
-      s.replace(dstWeekTxt, "Second");
-      break;
-    case 3:
-      s.replace(dstWeekTxt, "Third");
-      break;
-    case 0:
-      s.replace(dstWeekTxt, "Last");
-      break;
-  }
-  s.replace("@@DSTWEEK@@", String(settings.dstWeek));
+  s.replace("@@DSTWEEK@@", GenerateWeekList(settings.dstWeek, "dstWeek"));
 
+  s.replace("@@DSTMONTH@@",  GenerateMonthList(settings.dstMonth, "dstMonth"));
 
-
-  //dstMonth
-  String dstMonthTxt = "@@DSTMONTHTXT@@";
-  switch (settings.dstMonth) {
-    case 1:
-      s.replace(dstMonthTxt, "January");
-      break;
-    case 2:
-      s.replace(dstMonthTxt, "February");
-      break;
-    case 3:
-      s.replace(dstMonthTxt, "March");
-      break;
-    case 4:
-      s.replace(dstMonthTxt, "April");
-      break;
-    case 5:
-      s.replace(dstMonthTxt, "May");
-      break;
-    case 6:
-      s.replace(dstMonthTxt, "June");
-      break;
-    case 7:
-      s.replace(dstMonthTxt, "July");
-      break;
-    case 8:
-      s.replace(dstMonthTxt, "August");
-      break;
-    case 9:
-      s.replace(dstMonthTxt, "September");
-      break;
-    case 10:
-      s.replace(dstMonthTxt, "October");
-      break;
-    case 11:
-      s.replace(dstMonthTxt, "November");
-      break;
-    case 12:
-      s.replace(dstMonthTxt, "December");
-      break;
-  }
-  s.replace("@@DSTMONTH@@", String(settings.dstMonth));
-
-  s.replace("@@DSTHOUR@@", String(settings.dstHour));
+  s.replace("@@DSTHOUR@@", GenerateHourList(settings.dstHour, "dstHour"));
   s.replace("@@DSTOFFSET@@", String(settings.dstOffset));
 
   // STD
 
-  //STDDayofweek
-  String stdDayOfWeekTxt = "@@STDDAYOFWEEKTXT@@";
-  switch (settings.stdDayofweek) {
-    case 0:
-      s.replace(stdDayOfWeekTxt, "Sunday");
-      settings.stdDayofweek = 1;
-      break;
-    case 1:
-      s.replace(stdDayOfWeekTxt, "Sunday");
-      break;
-    case 2:
-      s.replace(stdDayOfWeekTxt, "Monday");
-      break;
-    case 3:
-      s.replace(stdDayOfWeekTxt, "Tuesday");
-      break;
-    case 4:
-      s.replace(stdDayOfWeekTxt, "Wednesday");
-      break;
-    case 5:
-      s.replace(stdDayOfWeekTxt, "Thursday");
-      break;
-    case 6:
-      s.replace(stdDayOfWeekTxt, "Friday");
-      break;
-    case 7:
-      s.replace(stdDayOfWeekTxt, "Saturday");
-      break;
-  }
-  s.replace("@@STDDAYOFWEEK@@", String(settings.stdDayofweek));
+  s.replace("@@STDDAYOFWEEK@@", GenerateDayList(settings.stdDayofweek, "stdDayofweek"));
 
   //stdWeek
-  String stdWeekTxt = "@@STDWEEKTXT@@";
-  switch (settings.stdWeek) {
-    case 1:
-      s.replace(stdWeekTxt, "First");
-      break;
-    case 2:
-      s.replace(stdWeekTxt, "Second");
-      break;
-    case 3:
-      s.replace(stdWeekTxt, "Third");
-      break;
-    case 0:
-      s.replace(stdWeekTxt, "Last");
-      break;
-  }
-  s.replace("@@STDWEEK@@", String(settings.stdWeek));
 
+  s.replace("@@STDWEEK@@", GenerateWeekList(settings.stdWeek, "stdWeek"));
 
+  s.replace("@@STDMONTH@@", GenerateMonthList(settings.stdMonth, "stdMonth"));
 
-  //stdMonth
-  String stdMonthTxt = "@@STDMONTHTXT@@";
-  switch (settings.stdMonth) {
-    case 1:
-      s.replace(stdMonthTxt, "January");
-      break;
-    case 2:
-      s.replace(stdMonthTxt, "February");
-      break;
-    case 3:
-      s.replace(stdMonthTxt, "March");
-      break;
-    case 4:
-      s.replace(stdMonthTxt, "April");
-      break;
-    case 5:
-      s.replace(stdMonthTxt, "May");
-      break;
-    case 6:
-      s.replace(stdMonthTxt, "June");
-      break;
-    case 7:
-      s.replace(stdMonthTxt, "July");
-      break;
-    case 8:
-      s.replace(stdMonthTxt, "August");
-      break;
-    case 9:
-      s.replace(stdMonthTxt, "September");
-      break;
-    case 10:
-      s.replace(stdMonthTxt, "October");
-      break;
-    case 11:
-      s.replace(stdMonthTxt, "November");
-      break;
-    case 12:
-      s.replace(stdMonthTxt, "December");
-      break;
-  }
-  s.replace("@@STDMONTH@@", String(settings.stdMonth));
-
-  s.replace("@@STDHOUR@@", String(settings.stdHour));
+  s.replace("@@STDHOUR@@", GenerateHourList(settings.stdHour, "stdHour"));
   s.replace("@@STDOFFSET@@", String(settings.stdOffset));
 
   // dim, bright hours
-  s.replace("@@DIM@@", String(settings.dim));
-  s.replace("@@BRIGHT@@", String(settings.bright));
+  s.replace("@@DIM@@", GenerateHourList(settings.dim, "dim"));
+  s.replace("@@BRIGHT@@", GenerateHourList(settings.bright, "bright"));
 
   s.replace("@@ID@@", String(ESP.getChipId(), HEX));
   s.replace("@@SIGNAL@@", String(WiFi.RSSI()));
@@ -320,7 +246,7 @@ void handleRoot() {
 
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
             "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
-           "<br>Last Sync: " + String(ntp.getTimeDate(myTZ.toLocal(ntp.lastSync)))+ "<br>First Sync: " + String(ntp.getTimeDate(myTZ.toLocal(firstSync))) + "<br>LI: " + String(ntp.LI));
+           "<br>Last Sync: " + String(ntp.getTimeDate(myTZ.toLocal(ntp.lastSync)))+ "<br>First Sync: " + String(ntp.getTimeDate(myTZ.toLocal(firstSync))) + "<br>LI: " + String(ntp.LI) + "<br>Heap Free:" + String(ESP.getFreeHeap()));
 //  s.replace("@@TIMESERVER1@@", "<br>Current NTP Server 1: " + String(NTP.getNTPServer(0)));
 
    s.replace("@@LASTIP@@", "<br>Last NTP Server IP Used: " + String(ntp.timeServerIP[0]) + "." + String(ntp.timeServerIP[1]) + "." + String(ntp.timeServerIP[2]) + "." + String(ntp.timeServerIP[3]));
@@ -420,16 +346,6 @@ void handleForm() {
 
 }
 
-void handleCredits() {
-
-if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
-    return server.requestAuthentication();
-  }
-  
-  server.send(200, "text/html", credits_page);
-
-
-}
 
 void setup() {
 
@@ -452,8 +368,7 @@ void setup() {
   //  setupTime();
   server.on("/", handleRoot);
   server.on("/form", handleForm);
-  server.on("/credits", handleCredits);
-
+ 
   strcpy(www_password, ID.c_str());  //need this to get the pw to work for some reason with the update svr.
 
   httpUpdater.setup(&server, updatePath, www_username, www_password);  //ota   
@@ -622,6 +537,7 @@ void setupAP() {
   
   displayAP();
 }
+
 
 
 
