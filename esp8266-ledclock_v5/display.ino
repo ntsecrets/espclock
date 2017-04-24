@@ -253,7 +253,7 @@ void displayClock() {
     blinkColon = false;
   }
 
-  boolean drawDots = false;
+ // boolean drawDots = false;
  // if (!ntp.timeIsSynced && blinkColon == true) {
  //   displayDash();
  // } else {
@@ -284,7 +284,7 @@ void displayClock() {
 
     milliseconds = (millis() - timeStamp) / 10;
 
-     matrix.print(displayValue, DEC);
+     
       if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced) {
         if (!settings.syncind) {   //option in UI to invert the display of the dot if it is synced or not
          matrix2.writeDigitNum(4, milliseconds % 10  , true);
@@ -319,6 +319,8 @@ void displayClock() {
 
 
     if (milliseconds == 0) { //only update if it needs it (on the second)
+
+      matrix.print(displayValue, DEC);
 
       if (firstSync == 0 && ntp.lastSync != 0) {
         firstSync = ntp.lastSync;
