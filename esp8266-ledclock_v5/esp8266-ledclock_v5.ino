@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 72;
+const int VERSION_MINOR = 73;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -113,6 +113,30 @@ String GenerateHourList(uint8_t SelectedItem, String Setting){
     }
 
     ret = ret + ">" + String(i) + "</option>";
+  }
+
+  ret = ret + "</select>";
+
+    return ret;
+
+}
+
+String GenerateDimmodeList(uint8_t SelectedItem, String Setting){
+  String ret;
+  ret = "<select name=" + Setting + ">";
+  uint8_t i;
+  for (i = 0; i < 17; i++) {
+    ret = ret + "<option value=\"" + String(i) + "\"";
+    if (i == SelectedItem) {
+      ret = ret + " selected ";
+    }
+    
+    if (i == 0) {
+    ret = ret + ">Auto</option>";
+    }
+    else {
+       ret = ret + ">" + String(i) + "</option>";
+    }
   }
 
   ret = ret + "</select>";
@@ -237,6 +261,7 @@ void handleRoot() {
   // dim, bright hours
   s.replace("@@DIM@@", GenerateHourList(settings.dim, "dim"));
   s.replace("@@BRIGHT@@", GenerateHourList(settings.bright, "bright"));
+  s.replace("@@DIMMODE@@", GenerateDimmodeList(settings.dimmode, "dimmode"));
 
   s.replace("@@ID@@", String(ESP.getChipId(), HEX));
   s.replace("@@SIGNAL@@", String(WiFi.RSSI()));
@@ -306,6 +331,8 @@ void handleForm() {
   settings.twelvehr = server.arg("twelvehr").toInt();
 
   settings.syncind = server.arg("syncind").toInt();
+
+  settings.dimmode = server.arg("dimmode").toInt();
 
   
   int syncInt = server.arg("ntpint").toInt();;

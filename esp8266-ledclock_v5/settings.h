@@ -88,6 +88,9 @@
 #define EEPROM_SYNCIND_OFFSET EEPROM_12HR_OFFSET + EEPROM_12HR_OFFSET_LENGTH
 #define EEPROM_SYNCIND_OFFSET_LENGTH 1
 
+#define EEPROM_DIMMODE_OFFSET EEPROM_SYNCIND_OFFSET + EEPROM_SYNCIND_OFFSET_LENGTH
+#define EEPROM_DIMMODE_OFFSET_LENGTH 1
+
 //#define EEPROM_TIMESERVER1_OFFSET EEPROM_12HR_OFFSET + EEPROM_12HR_OFFSET_LENGTH
 //#define EEPROM_TIMESERVER1_LENGTH 32
 
@@ -122,6 +125,7 @@
 #define DEFAULT_BRIGHT 7
 
 #define DEFAULT_FUDGE 0
+#define DEFAULT_DIMMODE 0
 
 // TODO finish the defaults
 
@@ -264,6 +268,7 @@ class Settings {
 
       twelvehr = int(buffer[EEPROM_12HR_OFFSET]);
       syncind = int(buffer[EEPROM_SYNCIND_OFFSET]);
+      dimmode = int(buffer[EEPROM_DIMMODE_OFFSET]);
 
      
 
@@ -356,6 +361,7 @@ class Settings {
       buffer[EEPROM_BRIGHT_OFFSET] = bright;
       buffer[EEPROM_12HR_OFFSET] = twelvehr;
       buffer[EEPROM_SYNCIND_OFFSET] = syncind;
+      buffer[EEPROM_DIMMODE_OFFSET] = dimmode;
 
      // buffer[EEPROM_FUDGE_OFFSET] = fudge;
 
@@ -442,6 +448,7 @@ class Settings {
 
       buffer[EEPROM_12HR_OFFSET] = 0;
       buffer[EEPROM_SYNCIND_OFFSET] = 0;
+      buffer[EEPROM_DIMMODE_OFFSET] = DEFAULT_DIMMODE;
 
        // convert from an unsigned long int to a 4-byte array
       buffer[EEPROM_FUDGE_OFFSET] = (int)((DEFAULT_FUDGE >> 24) & 0xFF) ;
@@ -529,6 +536,7 @@ class Settings {
     uint8_t syncind;  //sync indicator option
 
     int fudge;
+    uint8_t dimmode;
 
     //  time_t local;
 

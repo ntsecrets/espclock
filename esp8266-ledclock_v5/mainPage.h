@@ -112,6 +112,13 @@ STD Offset:
 </tr>
 <tr>
 <td>
+Dim Mode:</td>
+<td>
+@@DIMMODE@@
+</td>
+</tr>
+<tr>
+<td>
 Dim Start Hour:</td>
 <td>
 @@DIM@@

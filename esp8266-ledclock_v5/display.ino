@@ -213,18 +213,18 @@ void displayClock() {
 
   // dim the display if its in the hours
 
-  if (settings.dim == 0 || settings.bright == 0) {
-    matrix.setBrightness(15);
-    matrix2.setBrightness(15);
-  } else {
-
-    if (h >= settings.dim || h <= settings.bright) {
+  if (settings.dimmode == 0) {  //auto mode
+  if (h >= settings.dim || h <= settings.bright) {
       matrix.setBrightness(1);
       matrix2.setBrightness(1);
     } else {
       matrix.setBrightness(15);
       matrix2.setBrightness(15);
     }
+  } else {
+    //manual mode
+    matrix.setBrightness(settings.dimmode);
+    matrix2.setBrightness(settings.dimmode);
   }
 
 
@@ -284,6 +284,24 @@ void displayClock() {
 
     milliseconds = (millis() - timeStamp) / 10;
 
+     matrix.print(displayValue, DEC);
+      if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced) {
+        if (!settings.syncind) {   //option in UI to invert the display of the dot if it is synced or not
+         matrix2.writeDigitNum(4, milliseconds % 10  , true);
+        }
+         else
+         {
+          matrix2.writeDigitNum(4, milliseconds % 10  , false);
+         }
+      
+        // synced = false;
+      } else {
+        // turn on if syncind is enabled
+        if (settings.syncind) { 
+          matrix2.writeDigitNum(4, milliseconds % 10  , true);
+        }
+      }
+
 
 
     if (milliseconds > 99 || lastsecond < s) {
@@ -307,23 +325,7 @@ void displayClock() {
       }
 
 
-      matrix.print(displayValue, DEC);
-      if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced) {
-        if (!settings.syncind) {   //option in UI to invert the display of the dot if it is synced or not
-         matrix.writeDigitNum(4, displayValue % 10  , true);
-        }
-         else
-         {
-          matrix.writeDigitNum(4, displayValue % 10  , false);
-         }
-      
-        // synced = false;
-      } else {
-        // turn on if syncind is enabled
-        if (settings.syncind) { 
-          matrix.writeDigitNum(4, displayValue % 10  , true);
-        }
-      }
+     
 
       matrix.drawColon(blinkColon);
 
