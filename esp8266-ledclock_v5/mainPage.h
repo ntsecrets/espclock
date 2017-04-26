@@ -25,7 +25,6 @@ const char MAIN_page[] PROGMEM = R"=====(
 <tr><td colspan=2 class=heading>Status</td></tr>
 <tr><td>Current time:</td><td><b>@@TIME@@</b></td></tr>
 <tr><td>Sync Status:</td><td>@@SYNCSTATUS@@</td></tr>
-<tr><td>Wifi Reconnects:</td><td>@@WIFICONNECTS@@</td></tr>
 <tr><td>Signal:</td><td>@@SIGNAL@@ db</td></tr>
 <tr><td>Clock ID:</td><td>@@ID@@</td></tr>
 <tr><td>Name:</td><td><input type=text name="clockname" value="@@CLOCKNAME@@"></td></tr>
@@ -133,6 +132,7 @@ Dim End Hour:</td><td>
 <tr><td>Fudge Amount:</td><td><input type=text name="fudge" value="@@FUDGE@@" size=5>s</td></tr>
 <tr><td>12 HR mode?:</td><td><input type=checkbox name="twelvehr" value=1 @@12HRMODE@@></td></tr>
 <tr><td>Sync Indicator?:</td><td><input type=checkbox name="syncind" value=1 @@SYNCIND@@></td></tr>
+<tr><td>Center Dot?:</td><td><input type=checkbox name="centerdot" value=1 @@CENTERDOT@@></td></tr>
 </table>
 <p/>
 <input type="submit" value="Update">
@@ -143,6 +143,8 @@ Dim End Hour:</td><td>
 @@LASTIP@@
 <p>
 <a href="/">Refresh Page</a>
+<p>
+<a href="/fwupload">Firmware Upload</a>
 <p>
 <a href="https://github.com/ntsecrets/espclock/wiki/Credits">Credits</a><br>
 For support and sales information, go to <a href="http://www.espclock.com">www.espclock.com</a> or email sales@espclock.com.<br>

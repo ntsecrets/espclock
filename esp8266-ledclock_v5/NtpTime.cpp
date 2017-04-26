@@ -102,7 +102,7 @@ void NTP::getTimestamp() { // timestamp in millis (UNIX * 1000)
 }
 
 void NTP::addTime() {
-  if (ntp.timestamp >= ntp.syncTime) ntp.syncTheTime();
+  if (ntp.timestamp >= ntp.syncTime && WiFi.status() == WL_CONNECTED) ntp.syncTheTime();  //only sync if wifi is up... otherwise carry on.
   ntp._stop = millis();
   ntp._start = ntp.startMillis;
   ntp.startMillis = millis();

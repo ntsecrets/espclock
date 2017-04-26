@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 73;
+const int VERSION_MINOR = 74;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -48,7 +48,7 @@ const byte DNS_PORT = 53;
 #define MODE_CLOCK 1
 int clockMode;
 //bool ipshown = false;
-int wificonnects = 0;
+//int wificonnects = 0;
 uint8_t setupdisp = 0;
 //bool synced = false;
 
@@ -232,6 +232,12 @@ void handleRoot() {
     s.replace("@@SYNCIND@@", "");
   }
 
+  if (settings.centerdot == 1) {
+  s.replace("@@CENTERDOT@@", "checked");
+  } else {
+    s.replace("@@CENTERDOT@@", "");
+  }
+
   //dstDayofweek
   
   s.replace("@@DSTDAYOFWEEK@@", GenerateDayList(settings.dstDayofweek, "dstDayofweek"));
@@ -262,12 +268,13 @@ void handleRoot() {
   s.replace("@@DIM@@", GenerateHourList(settings.dim, "dim"));
   s.replace("@@BRIGHT@@", GenerateHourList(settings.bright, "bright"));
   s.replace("@@DIMMODE@@", GenerateDimmodeList(settings.dimmode, "dimmode"));
+  
 
   s.replace("@@ID@@", String(ESP.getChipId(), HEX));
   s.replace("@@SIGNAL@@", String(WiFi.RSSI()));
 
   s.replace("@@FUDGE@@", String(settings.fudge));
-  s.replace("@@WIFICONNECTS@@", String(wificonnects));
+ // s.replace("@@WIFICONNECTS@@", String(wificonnects));
 
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
             "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
@@ -333,6 +340,7 @@ void handleForm() {
   settings.syncind = server.arg("syncind").toInt();
 
   settings.dimmode = server.arg("dimmode").toInt();
+  settings.centerdot = server.arg("centerdot").toInt();
 
   
   int syncInt = server.arg("ntpint").toInt();;
@@ -430,13 +438,13 @@ void loop() {
         ntp.addTime();
         displayClock();
         //connect wifi if not connected
-        if (WiFi.status() != WL_CONNECTED) {
-          delay(1);
-          displayDash();
+      /*  if (WiFi.status() != WL_CONNECTED) {
+         delay(1);
+         displayDash();
           setupSTA();
           wificonnects++;
           return;
-        }
+        }  */
       }
       //   }
   //  }

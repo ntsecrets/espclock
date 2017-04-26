@@ -285,7 +285,7 @@ void displayClock() {
     milliseconds = (millis() - timeStamp) / 10;
 
      
-      if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced) {
+      if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced || WiFi.status() != WL_CONNECTED) {
         if (!settings.syncind) {   //option in UI to invert the display of the dot if it is synced or not
          matrix2.writeDigitNum(4, milliseconds % 10  , true);
         }
@@ -326,6 +326,10 @@ void displayClock() {
         firstSync = ntp.lastSync;
       }
 
+      // enable dot if selected
+      if (settings.centerdot) {   //option in UI to invert the display of the dot if it is synced or not
+         matrix.writeDigitNum(4, displayValue % 10  , true);
+        }
 
      
 
