@@ -492,8 +492,8 @@ class Settings {
       return ST;
     }
 
-    String ssid;
-    String psk;
+  //  String ssid;
+  //  String psk;
     //long timezone;
     char timeserver[32];   //this was 64 but the flash only had it as 32?
     char timeserver1[32];

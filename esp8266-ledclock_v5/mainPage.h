@@ -31,13 +31,13 @@ const char MAIN_page[] PROGMEM = R"=====(
 
 
 <tr><td colspan=2 class=heading>WiFi Setup</td></tr>
-<tr><td>SSID:</td><td><input type=text name="ssid" maxlength="32" autocorrect="off" autocapitalize="off" spellcheck="false" value="@@SSID@@"></td></tr>
-<tr><td>PSK:</td><td><input type=text name="psk" maxlength="64" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value=""></td></tr>
+<tr><td>SSID:</td><td><input type=text name="ssid" maxlength="32" autocorrect="off" autocapitalize="off" spellcheck="false" value="@@SSID@@">1-32 char</td></tr>
+<tr><td>PSK:</td><td><input type=text name="psk" maxlength="63" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" pattern=".{0}|.{8,}" title="Either 0 OR (8 chars minimum)">8-63 char</td></tr>
 <tr><td colspan=2>Update Wifi config:<input type=checkbox name=update_wifi value=1></td></tr>
 
 <tr><td colspan=2 class=heading>Time Setup</td></tr>
-<tr><td>NTP Server:</td><td><input type=text name="ntpsrv" value="@@NTPSRV@@"></td></tr>
-<tr><td>Sync Interval:</td><td><input type=text name="ntpint" value="@@NTPINT@@">s</td></tr>
+<tr><td>NTP Server:</td><td><input type=text name="ntpsrv" value="@@NTPSRV@@" required></td></tr>
+<tr><td>Sync Interval:</td><td><input type=text name="ntpint" value="@@NTPINT@@" required>sec</td></tr>
 <tr><td>DST:</td><td><input type=text name="dst" value="@@DST@@" size=3></td>
 <tr><tr><td>
 DST Week:</td><td>
@@ -70,7 +70,7 @@ DST Hour:</td>
 DST Offset:
 </td>
 <td>
-<input name=dstOffset type=text value=@@DSTOFFSET@@>m
+<input name=dstOffset type=text value=@@DSTOFFSET@@>minutes
 </td>
 </tr>
 
@@ -106,7 +106,7 @@ STD Hour:</td>
 STD Offset:
 </td>
 <td>
-<input name=stdOffset type=text value=@@STDOFFSET@@>m
+<input name=stdOffset type=text value=@@STDOFFSET@@>minutes
 </td>
 </tr>
 <tr>
@@ -129,7 +129,7 @@ Dim End Hour:</td><td>
 @@BRIGHT@@
 </td>
 </tr>
-<tr><td>Fudge Amount:</td><td><input type=text name="fudge" value="@@FUDGE@@" size=5>s</td></tr>
+<tr><td>Fudge Amount:</td><td><input type=text name="fudge" value="@@FUDGE@@" size=5>sec</td></tr>
 <tr><td>12 HR mode?:</td><td><input type=checkbox name="twelvehr" value=1 @@12HRMODE@@></td></tr>
 <tr><td>Sync Indicator?:</td><td><input type=checkbox name="syncind" value=1 @@SYNCIND@@></td></tr>
 <tr><td>Center Dot?:</td><td><input type=checkbox name="centerdot" value=1 @@CENTERDOT@@></td></tr>
