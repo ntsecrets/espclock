@@ -31,8 +31,8 @@ const char MAIN_page[] PROGMEM = R"=====(
 
 
 <tr><td colspan=2 class=heading>WiFi Setup</td></tr>
-<tr><td>SSID:</td><td><input type=text name="ssid" value="@@SSID@@"></td></tr>
-<tr><td>PSK:</td><td><input type=text name="psk" value=""></td></tr>
+<tr><td>SSID:</td><td><input type=text name="ssid" maxlength="32" autocorrect="off" autocapitalize="off" spellcheck="false" value="@@SSID@@"></td></tr>
+<tr><td>PSK:</td><td><input type=text name="psk" maxlength="64" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value=""></td></tr>
 <tr><td colspan=2>Update Wifi config:<input type=checkbox name=update_wifi value=1></td></tr>
 
 <tr><td colspan=2 class=heading>Time Setup</td></tr>

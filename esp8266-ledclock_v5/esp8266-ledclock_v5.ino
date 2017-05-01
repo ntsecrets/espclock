@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 74;
+const int VERSION_MINOR = 75;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -198,7 +198,7 @@ void handleRoot() {
   }
 
   String s = MAIN_page;
-  s.replace("@@SSID@@", settings.ssid);
+  s.replace("@@SSID@@", WiFi.SSID());
   //s.replace("@@PSK@@", settings.psk);
   //  s.replace("@@TZ@@", String(settings.timezone));
   s.replace("@@TIME@@", String(tcr -> abbrev) + " " + String(ntp.getTimeDate(myTZ.toLocal(ntp.timestamp))));
@@ -299,16 +299,17 @@ void handleForm() {
 
 
   String update_wifi = server.arg("update_wifi");
-  String t_ssid = server.arg("ssid");
-  String t_psk = server.arg("psk");
+  //String t_ssid = server.arg("ssid");
+ // String t_psk = server.arg("psk");
   String t_timeserver = server.arg("ntpsrv");
   t_timeserver.toCharArray(settings.timeserver, EEPROM_TIMESERVER_LENGTH, 0);
   //t_timeserver = server.arg("ntpsrv1");
   //t_timeserver.toCharArray(settings.timeserver1, EEPROM_TIMESERVER1_LENGTH, 0);
-  if (update_wifi == "1") {
+ /* if (update_wifi == "1") {
     settings.ssid = t_ssid;
     settings.psk = t_psk;
-  }
+   
+  }  */
   //dst
   server.arg("dst").toCharArray(settings.DST, EEPROM_DT_LENGTH, 0);
   server.arg("std").toCharArray(settings.STD, EEPROM_ST_LENGTH, 0);
@@ -364,8 +365,8 @@ void handleForm() {
   server.handleClient();
 
   if (update_wifi == "1" || clockMode == MODE_SETUP) {
-    delay(1000);
-    setupWiFi();
+   // delay(1000);
+    setupNewWiFi(server.arg("ssid"), server.arg("psk"));
   }
 
   
@@ -495,7 +496,8 @@ void setupWiFi() {
         }
 
     
-    if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
+   // if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
+   if (digitalRead(SETUP_PIN) == 0 || WiFi.SSID() == "") {
   
     return setupAP();
     }
@@ -505,13 +507,15 @@ void setupWiFi() {
   setupSTA();
 }
 
+/*
 void setupSTA()
 {
+
   char ssid[32];
   char psk[64];
   memset(ssid, 0, 32);
   memset(psk, 0, 64);
-  //displayBusy(1);
+  displayBusy(1);
 
 
   clockMode = MODE_CLOCK;
@@ -521,9 +525,11 @@ void setupSTA()
   WiFi.disconnect();  //this seems to help with the initial connect after a brief power interruption
   WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
   if (settings.psk.length()) {
-    WiFi.begin(ssid, psk);
+   WiFi.begin(ssid, psk);
+   
   } else {
-    WiFi.begin(ssid);
+   WiFi.begin(ssid);
+   ;
   }
   
 uint8_t conncount = 100;
@@ -556,6 +562,70 @@ uint8_t conncount = 100;
   delay(1000);
   displayIP(true);
   delay(1000);
+} */
+
+void setupSTA(){
+
+clockMode = MODE_CLOCK;
+ // https://github.com/esp8266/Arduino/issues/2186 - need the stuff below to fully reset an existing conn.
+  WiFi.persistent(false);
+  WiFi.mode(WIFI_OFF); 
+  WiFi.mode(WIFI_STA);
+
+  // end conn reset
+  // set the hostname
+  WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
+
+
+WiFi.begin();
+
+while (WiFi.status() != WL_CONNECTED) {
+  displayDash();
+  delay(1000);
+  displayID();
+  delay(1000);
+  
+}
+
+ displayIP(false);
+  delay(1000);
+  displayIP(true);
+  delay(1000);
+  WiFi.persistent(true);
+}
+
+
+void setupNewWiFi(String sSSID, String PSK){
+
+
+   // erase SSID
+  if (sSSID == "") {
+      ESP.eraseConfig();
+  } else {
+
+
+clockMode = MODE_CLOCK;
+  WiFi.mode(WIFI_STA);
+  WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
+
+if (PSK) {
+  WiFi.begin(sSSID.c_str(), PSK.c_str());
+} else {
+  WiFi.begin(sSSID.c_str());
+}
+
+while (WiFi.status() != WL_CONNECTED) {
+  displayDash();
+  delay(1000);
+  displayID();
+  delay(1000);
+}
+
+ displayIP(false);
+  delay(1000);
+  displayIP(true);
+  delay(1000);
+  }
 }
 
 void setupAP() {

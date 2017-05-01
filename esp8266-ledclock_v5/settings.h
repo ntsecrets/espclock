@@ -160,7 +160,7 @@ class Settings {
         SaveDefaults();
       }
       // Read SSID
-      ssid = "";
+      /* ssid = "";
       for (int i = EEPROM_SSID_OFFSET ; i < EEPROM_SSID_OFFSET + EEPROM_SSID_LENGTH ; i++) {
         if (buffer[i]) ssid += buffer[i];
       }
@@ -169,28 +169,11 @@ class Settings {
       for (int i = EEPROM_PSK_OFFSET ; i < EEPROM_PSK_OFFSET + EEPROM_PSK_LENGTH ; i++) {
         if (buffer[i]) psk += buffer[i];
 
-
+     
 
       }
 
-      /*
-              char tzbufferDT[EEPROM_DT_OFFSET];
-            EEPROM.begin(TZRULESIZLE);
-            for (int i = 0 ; i < TZRULESIZLE ; i++) {
-              tzbufferDT[i] = EEPROM.read(i);
-            }
-            EEPROM.end();
-
-        //      TimeChangeRule DT = { *tzbuffer };
-
-             char tzbufferST[EEPROM_DT_OFFSET];
-            EEPROM.begin(TZRULESIZLE * 2);
-            for (int i = 0 ; i < TZRULESIZLE ; i++) {
-              tzbufferST[i] = EEPROM.read(i);
-            }
-            EEPROM.end();   */
-
-
+       */
 
       //  timezone = long(buffer[EEPROM_TZ_OFFSET]);
 
@@ -309,9 +292,9 @@ class Settings {
       strncpy((char *)buffer, EEPROM_MAGIC, EEPROM_MAGIC_LENGTH);
 
       // Copy SSID to buffer;
-      ssid.getBytes(&buffer[EEPROM_SSID_OFFSET], EEPROM_SSID_LENGTH, 0);
+    //  ssid.getBytes(&buffer[EEPROM_SSID_OFFSET], EEPROM_SSID_LENGTH, 0);
       // Copy PSK to buffer.
-      psk.getBytes(&buffer[EEPROM_PSK_OFFSET], EEPROM_PSK_LENGTH, 0);
+    //  psk.getBytes(&buffer[EEPROM_PSK_OFFSET], EEPROM_PSK_LENGTH, 0);
       // Copy timezone.
       // buffer[EEPROM_TZ_OFFSET] = timezone;
       // Copy timeserver.
