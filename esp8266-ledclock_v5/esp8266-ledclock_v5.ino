@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 76;
+const int VERSION_MINOR = 77;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -67,42 +67,42 @@ TimeChangeRule *tcr;
 Timezone myTZ( DT, ST);
 
 void handleNotFound() {
-server.sendHeader("Location", String("/"), true);
-server.send ( 302, "text/plain", ""); 
-  
+  server.sendHeader("Location", String("/"), true);
+  server.send ( 302, "text/plain", "");
+
 }
 
-String GenerateMonthList(uint8_t SelectedItem, String Setting){
-    String ret;
-    char *months = "JanFebMarAprMayJunJulAugSepOctNovDec";
-    
-    // what we want to return basically is 
-    // <option value="1">January</option>  and so on
-    char monthchar[3];
-    
+String GenerateMonthList(uint8_t SelectedItem, String Setting) {
+  String ret;
+  char *months = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
-    ret = "<select name=" + Setting + ">";
-    uint8_t i;
-    for (i = 0; i < 12; i++){
-       memcpy(monthchar, &months[i * 3], 3);
-       monthchar[3] = '\0';
-       ret = ret + "<option value=\"" + String(i + 1) + "\"";
-       if (i == SelectedItem - 1) {
-          ret = ret + " selected ";
-        
-       }
-       ret = ret + ">" + monthchar + "</option>";
-         
+  // what we want to return basically is
+  // <option value="1">January</option>  and so on
+  char monthchar[3];
+
+
+  ret = "<select name=" + Setting + ">";
+  uint8_t i;
+  for (i = 0; i < 12; i++) {
+    memcpy(monthchar, &months[i * 3], 3);
+    monthchar[3] = '\0';
+    ret = ret + "<option value=\"" + String(i + 1) + "\"";
+    if (i == SelectedItem - 1) {
+      ret = ret + " selected ";
+
     }
+    ret = ret + ">" + monthchar + "</option>";
 
-    ret = ret + "</select>";
+  }
 
-    return ret;
+  ret = ret + "</select>";
 
-  
+  return ret;
+
+
 }
 
-String GenerateHourList(uint8_t SelectedItem, String Setting){
+String GenerateHourList(uint8_t SelectedItem, String Setting) {
   String ret;
   ret = "<select name=" + Setting + ">";
   uint8_t i;
@@ -117,11 +117,11 @@ String GenerateHourList(uint8_t SelectedItem, String Setting){
 
   ret = ret + "</select>";
 
-    return ret;
+  return ret;
 
 }
 
-String GenerateDimmodeList(uint8_t SelectedItem, String Setting){
+String GenerateDimmodeList(uint8_t SelectedItem, String Setting) {
   String ret;
   ret = "<select name=" + Setting + ">";
   uint8_t i;
@@ -130,22 +130,22 @@ String GenerateDimmodeList(uint8_t SelectedItem, String Setting){
     if (i == SelectedItem) {
       ret = ret + " selected ";
     }
-    
+
     if (i == 0) {
-    ret = ret + ">Auto</option>";
+      ret = ret + ">Auto</option>";
     }
     else {
-       ret = ret + ">" + String(i) + "</option>";
+      ret = ret + ">" + String(i) + "</option>";
     }
   }
 
   ret = ret + "</select>";
 
-    return ret;
+  return ret;
 
 }
 
-String GenerateDayList(uint8_t SelectedItem, String Setting){
+String GenerateDayList(uint8_t SelectedItem, String Setting) {
   String ret;
   char *days = "SunMonTueWedThrFriSat";
   char daychar[3];
@@ -164,11 +164,11 @@ String GenerateDayList(uint8_t SelectedItem, String Setting){
 
   ret = ret + "</select>";
 
-    return ret;
+  return ret;
 
 }
 
-String GenerateWeekList(uint8_t SelectedItem, String Setting){
+String GenerateWeekList(uint8_t SelectedItem, String Setting) {
   String ret;
   char *weeks = "Lst1st2nd3rd4th";
   char weekchar[3];
@@ -187,7 +187,7 @@ String GenerateWeekList(uint8_t SelectedItem, String Setting){
 
   ret = ret + "</select>";
 
-    return ret;
+  return ret;
 
 }
 
@@ -221,25 +221,25 @@ void handleRoot() {
 
 
   if (settings.twelvehr == 1) {
-  s.replace("@@12HRMODE@@", "checked");
+    s.replace("@@12HRMODE@@", "checked");
   } else {
     s.replace("@@12HRMODE@@", "");
   }
 
   if (settings.syncind == 1) {
-  s.replace("@@SYNCIND@@", "checked");
+    s.replace("@@SYNCIND@@", "checked");
   } else {
     s.replace("@@SYNCIND@@", "");
   }
 
   if (settings.centerdot == 1) {
-  s.replace("@@CENTERDOT@@", "checked");
+    s.replace("@@CENTERDOT@@", "checked");
   } else {
     s.replace("@@CENTERDOT@@", "");
   }
 
   //dstDayofweek
-  
+
   s.replace("@@DSTDAYOFWEEK@@", GenerateDayList(settings.dstDayofweek, "dstDayofweek"));
 
   String dstWeekTxt = "@@DSTWEEKTXT@@";
@@ -268,23 +268,23 @@ void handleRoot() {
   s.replace("@@DIM@@", GenerateHourList(settings.dim, "dim"));
   s.replace("@@BRIGHT@@", GenerateHourList(settings.bright, "bright"));
   s.replace("@@DIMMODE@@", GenerateDimmodeList(settings.dimmode, "dimmode"));
-  
+
 
   s.replace("@@ID@@", String(ESP.getChipId(), HEX));
   s.replace("@@SIGNAL@@", String(WiFi.RSSI()));
 
   s.replace("@@FUDGE@@", String(settings.fudge));
- // s.replace("@@WIFICONNECTS@@", String(wificonnects));
+  // s.replace("@@WIFICONNECTS@@", String(wificonnects));
 
   s.replace("@@DEBUG@@",  String(settings.DST) + " " + String(settings.dstWeek) + " " + String(settings.dstDayofweek) + " " + String(settings.dstMonth) + " " + String(settings.dstHour) + " " + String(settings.dstOffset) +
             "<br>" + String(settings.STD) + " " + String(settings.stdWeek) + " " + String(settings.stdDayofweek) +  " " + String(settings.stdMonth) + " " + String(settings.stdHour) + " " + String(settings.stdOffset) +
-           "<br>Last Sync: " + String(ntp.getTimeDate(myTZ.toLocal(ntp.lastSync)))+ "<br>First Sync: " + String(ntp.getTimeDate(myTZ.toLocal(firstSync))) + "<br>LI: " + String(ntp.LI) + "<br>Heap Free: " + String(ESP.getFreeHeap()));
-//  s.replace("@@TIMESERVER1@@", "<br>Current NTP Server 1: " + String(NTP.getNTPServer(0)));
+            "<br>Last Sync: " + String(ntp.getTimeDate(myTZ.toLocal(ntp.lastSync))) + "<br>First Sync: " + String(ntp.getTimeDate(myTZ.toLocal(firstSync))) + "<br>LI: " + String(ntp.LI) + "<br>Heap Free: " + String(ESP.getFreeHeap()));
+  //  s.replace("@@TIMESERVER1@@", "<br>Current NTP Server 1: " + String(NTP.getNTPServer(0)));
 
-   s.replace("@@LASTIP@@", "<br>Last NTP Server IP Used: " + String(ntp.timeServerIP[0]) + "." + String(ntp.timeServerIP[1]) + "." + String(ntp.timeServerIP[2]) + "." + String(ntp.timeServerIP[3]));
-//  if (sizeof(settings.timeserver1 > 0)) {
-//   s.replace("@@TIMESERVER2@@", "<br>Current NTP Server 2: " + String(NTP.getNTPServer(1)));
-//  }
+  s.replace("@@LASTIP@@", "<br>Last NTP Server IP Used: " + String(ntp.timeServerIP[0]) + "." + String(ntp.timeServerIP[1]) + "." + String(ntp.timeServerIP[2]) + "." + String(ntp.timeServerIP[3]));
+  //  if (sizeof(settings.timeserver1 > 0)) {
+  //   s.replace("@@TIMESERVER2@@", "<br>Current NTP Server 2: " + String(NTP.getNTPServer(1)));
+  //  }
 
   httpUpdateResponse = "";
   server.send(200, "text/html", s);
@@ -300,16 +300,16 @@ void handleForm() {
 
   String update_wifi = server.arg("update_wifi");
   //String t_ssid = server.arg("ssid");
- // String t_psk = server.arg("psk");
+  // String t_psk = server.arg("psk");
   String t_timeserver = server.arg("ntpsrv");
   t_timeserver.toCharArray(settings.timeserver, EEPROM_TIMESERVER_LENGTH, 0);
   //t_timeserver = server.arg("ntpsrv1");
   //t_timeserver.toCharArray(settings.timeserver1, EEPROM_TIMESERVER1_LENGTH, 0);
- /* if (update_wifi == "1") {
-    settings.ssid = t_ssid;
-    settings.psk = t_psk;
-   
-  }  */
+  /* if (update_wifi == "1") {
+     settings.ssid = t_ssid;
+     settings.psk = t_psk;
+
+    }  */
   //dst
   server.arg("dst").toCharArray(settings.DST, EEPROM_DT_LENGTH, 0);
   server.arg("std").toCharArray(settings.STD, EEPROM_ST_LENGTH, 0);
@@ -343,12 +343,12 @@ void handleForm() {
   settings.dimmode = server.arg("dimmode").toInt();
   settings.centerdot = server.arg("centerdot").toInt();
 
-  
+
   int syncInt = server.arg("ntpint").toInt();;
   if (syncInt < MINIMUM_INTERVAL) {
     syncInt = MINIMUM_INTERVAL;
   }
-  
+
   settings.interval = syncInt;
 
   settings.name = server.arg("clockname");
@@ -364,21 +364,27 @@ void handleForm() {
 
   server.handleClient();
 
-  if (update_wifi == "1" || clockMode == MODE_SETUP) {
-   // delay(1000);
-    setupNewWiFi(server.arg("ssid"), server.arg("psk"));
+  clockMode = MODE_CLOCK;
+
+  if (update_wifi == "1") {
+    // delay(1000);
+    if (server.arg("ssid") == "") {
+      eraseSSID();
+    }
+    else {
+      setupNewWiFi(server.arg("ssid"), server.arg("psk"));
+    }
   }
 
-  
-   ntp.ntpServerName = (char*)settings.timeserver;
-  
+  ntp.ntpServerName = (char*)settings.timeserver;
+
   if (ntp.syncOffset != settings.interval) {
-  ntp.syncOffset = settings.interval;
-  ntp.syncTheTime();  //force an immediate re-sync so that the interval is updated
+    ntp.syncOffset = settings.interval;
+    ntp.syncTheTime();  //force an immediate re-sync so that the interval is updated
   }
-  
-  
-  clockMode = MODE_CLOCK;
+
+
+
 
 }
 
@@ -387,14 +393,14 @@ void setup() {
 
   //char hostname = char(ESP.getChipId());
 
-  
+
 
   setupDisplay();
   pinMode(SETUP_PIN, INPUT_PULLUP);
   digitalWrite(SETUP_PIN, HIGH);
 
-//  MDNS.begin("espclock");
-//  MDNS.addService("http", "tcp", 80);
+  //  MDNS.begin("espclock");
+  //  MDNS.addService("http", "tcp", 80);
 
   server.onNotFound ( handleNotFound );
 
@@ -404,11 +410,11 @@ void setup() {
   //  setupTime();
   server.on("/", handleRoot);
   server.on("/form", handleForm);
- 
+
   strcpy(www_password, ID.c_str());  //need this to get the pw to work for some reason with the update svr.
 
-  httpUpdater.setup(&server, updatePath, www_username, www_password);  //ota   
- 
+  httpUpdater.setup(&server, updatePath, www_username, www_password);  //ota
+
 
   ntp.localPort = (uint16_t)random(0xC000, 0xFFFF);          //generate random port number in range C000-FFFF
   ntp.ntpServerName = (char*)settings.timeserver;
@@ -417,8 +423,8 @@ void setup() {
 
 void loop() {
   server.handleClient();
- 
-    if (digitalRead(SETUP_PIN) == 0) {
+
+  if (digitalRead(SETUP_PIN) == 0) {
 
     displayIP(false);
     delay(1000);
@@ -430,15 +436,15 @@ void loop() {
     digitalWrite(SETUP_PIN, HIGH);
   }
 
- 
-  
-  if (clockMode == MODE_CLOCK) {
-  //  if (ntp.timeIsSynced) {
 
-      if (millis() % 10 == 0 ) {
-        ntp.addTime();
-        displayClock();
-        //connect wifi if not connected
+
+  if (clockMode == MODE_CLOCK) {
+    //  if (ntp.timeIsSynced) {
+
+    if (millis() % 10 == 0 ) {
+      ntp.addTime();
+      displayClock();
+      //connect wifi if not connected
       /*  if (WiFi.status() != WL_CONNECTED) {
          delay(1);
          displayDash();
@@ -446,33 +452,33 @@ void loop() {
           wificonnects++;
           return;
         }  */
-      }
-      //   }
-  //  }
+    }
+    //   }
+    //  }
   } else {
 
     dnsServer.processNextRequest();
     yield();
-    
+
     //mode setup
     if (millis() % 1000 == 0) {
       switch (setupdisp) {
         case 0: displayID();
-              setupdisp++;
-              break;
+          setupdisp++;
+          break;
         case 1:
-              displayIP(false);
-              setupdisp++;
-              break;
+          displayIP(false);
+          setupdisp++;
+          break;
         case 2:
-              displayIP(true);
-              setupdisp++;
-              break;
+          displayIP(true);
+          setupdisp++;
+          break;
         case 3:
-              display8s();
-              setupdisp = 0;
-              break;
-        }
+          display8s();
+          setupdisp = 0;
+          break;
+      }
 
 
     }
@@ -489,17 +495,17 @@ void setupWiFi() {
   //display8s();  // display test for 1 second (first 1000 ms)
   displayVersion();
   while (millis() < 5000) {
-      if (millis() < 2000 && millis() > 1000) {
-          display8s();
-      }else if (millis() > 3000) {
-          displayID();
-        }
+    if (millis() < 2000 && millis() > 1000) {
+      display8s();
+    } else if (millis() > 3000) {
+      displayID();
+    }
 
-    
-   // if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
-   if (digitalRead(SETUP_PIN) == 0 || WiFi.SSID() == "") {
-  
-    return setupAP();
+
+    // if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
+    if (digitalRead(SETUP_PIN) == 0 || WiFi.SSID() == "") {
+
+      return setupAP();
     }
     delay(50);
   }
@@ -508,8 +514,8 @@ void setupWiFi() {
 }
 
 /*
-void setupSTA()
-{
+  void setupSTA()
+  {
 
   char ssid[32];
   char psk[64];
@@ -526,16 +532,16 @@ void setupSTA()
   WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
   if (settings.psk.length()) {
    WiFi.begin(ssid, psk);
-   
+
   } else {
    WiFi.begin(ssid);
    ;
   }
-  
-uint8_t conncount = 100;
- //if you don't succeed try try again
+
+  uint8_t conncount = 100;
+  //if you don't succeed try try again
   while (WiFi.status() != WL_CONNECTED) {
-    
+
     delay(100);
     if (conncount > 200) {
        WiFi.disconnect();
@@ -550,26 +556,26 @@ uint8_t conncount = 100;
        conncount = 0;
     }
 
-    
+
     conncount++;
   }
   // stopDisplayBusy();
   // displayDash();
 
-  
-  
+
+
   displayIP(false);
   delay(1000);
   displayIP(true);
   delay(1000);
-} */
+  } */
 
-void setupSTA(){
+void setupSTA() {
 
-clockMode = MODE_CLOCK;
- // https://github.com/esp8266/Arduino/issues/2186 - need the stuff below to fully reset an existing conn.
+  clockMode = MODE_CLOCK;
+  // https://github.com/esp8266/Arduino/issues/2186 - need the stuff below to fully reset an existing conn.
   WiFi.persistent(false);
-  WiFi.mode(WIFI_OFF); 
+  WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_STA);
 
   // end conn reset
@@ -577,17 +583,17 @@ clockMode = MODE_CLOCK;
   WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
 
 
-WiFi.begin();
+  WiFi.begin();
 
-while (WiFi.status() != WL_CONNECTED) {
-  displayDash();
-  delay(1000);
-  displayID();
-  delay(1000);
-  
-}
+  while (WiFi.status() != WL_CONNECTED) {
+    displayDash();
+    delay(1000);
+    displayID();
+    delay(1000);
 
- displayIP(false);
+  }
+
+  displayIP(false);
   delay(1000);
   displayIP(true);
   delay(1000);
@@ -595,51 +601,50 @@ while (WiFi.status() != WL_CONNECTED) {
 }
 
 
-void setupNewWiFi(String sSSID, String PSK){
+void setupNewWiFi(String sSSID, String PSK) {
 
-
-   // erase SSID
-  if (sSSID == "") {
-      ESP.eraseConfig();
-  } else {
-
-
-clockMode = MODE_CLOCK;
+  clockMode = MODE_CLOCK;
   WiFi.mode(WIFI_STA);
   WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
 
-if (PSK) {
-  WiFi.begin(sSSID.c_str(), PSK.c_str());
-} else {
-  WiFi.begin(sSSID.c_str());
-}
+  if (PSK) {
+    WiFi.begin(sSSID.c_str(), PSK.c_str());
+  } else {
+    WiFi.begin(sSSID.c_str());
+  }
 
-while (WiFi.status() != WL_CONNECTED) {
-  displayDash();
-  delay(1000);
-  displayID();
-  delay(1000);
-}
+  while (WiFi.status() != WL_CONNECTED) {
+    displayDash();
+    delay(1000);
+    displayID();
+    delay(1000);
+  }
 
- displayIP(false);
+  displayIP(false);
   delay(1000);
   displayIP(true);
   delay(1000);
-  }
+
+}
+
+
+void eraseSSID() {
+  WiFi.disconnect();
+  clockMode = MODE_SETUP;
 }
 
 void setupAP() {
   clockMode = MODE_SETUP;
 
-  int channel = random(1,12);
-  
+  int channel = random(1, 12);
+
   WiFi.mode(WIFI_AP);
   WiFi.softAP((String(WIFI_AP_NAME) + String(ESP.getChipId(), HEX)).c_str(), WPA_PSK, channel);
 
-    // if DNSServer is started with "*" for domain name, it will reply with
+  // if DNSServer is started with "*" for domain name, it will reply with
   // provided IP to all DNS request
   dnsServer.start(DNS_PORT, "*", apIP);
-  
+
   displayAP();
 }
 
