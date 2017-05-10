@@ -29,9 +29,11 @@ void NTP::syncTheTime() {
   Udp.beginPacket(ntp.timeServerIP, 123);  // requests to port 123
   Udp.write(pcktBuf, 48);  // send the packed
   Udp.endPacket();
+  uint32_t prePacket = millis();  //store the time before sending the packet
   uint32_t timeout = millis() + 1000;
   while (millis() < timeout) {
     if (Udp.parsePacket() >= 48) {  // get udp packet
+      ntp.pktDelay = millis() - prePacket;
       Udp.read(pcktBuf, 48);  // get the time data
       Udp.stop();
       // convert four bytes starting at location 40 to a long integer

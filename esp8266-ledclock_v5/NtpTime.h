@@ -24,6 +24,7 @@ public:
   void addTime();
   const char* getTimeDate(time_t _time);
   IPAddress timeServerIP;     // for troubleshooting - get the last IP used
+  uint32_t pktDelay;          // apparent delay in packet round trip
 private:
   unsigned long difference;
   unsigned long _stop;
