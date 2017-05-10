@@ -3,7 +3,7 @@ const char MAIN_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 <head>
- <link rel="icon" href="data:,">
+ <link type="image/x-icon" rel="icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABMElEQVR42qWTMaqDQBCGvYCtB0iZwsI2B8gNvEBII1YWSqoQG8+Q3hSKYGFjEU9hpUlATG8hokFN/scuRCLKvvfIwDT/zn47/84uhy+DYy3e73dcLpchr9crsixDWZa/A2zbBsdxs3k8HtmA1+uF9XpNi4MgoBmGITRNo5rjOGxAVVVYLpewLGukn89nCkiShA2I45gWkg2fYRgGFosF6rpmA1zXpYA0TdH3PR6PB4qioF2pqkotMgFv/3Pp+z57jMQ/aZMUm6aJ3W6Hw+EAQRCodrvd2IC3/yiKRvp+v5/4nwWcTifwPI88zwetaRqIojjxPwGQRUVRsFqt0HXd6EWSrjzPYz/ltm2Hy9psNpBlGdvtdtA+5z8LIOMip0uSNLl9XdfxfD7/95m+/o1/iR+ELlsYK5fcwgAAAABJRU5ErkJggg==">
  <meta name="viewport" content="initial-scale=1">
  <style>
  body {font-family: helvetica,arial,sans-serif;}
