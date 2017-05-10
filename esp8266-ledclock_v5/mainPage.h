@@ -3,7 +3,7 @@ const char MAIN_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 <head>
-
+ <link rel="icon" href="data:,">
  <meta name="viewport" content="initial-scale=1">
  <style>
  body {font-family: helvetica,arial,sans-serif;}
