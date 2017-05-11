@@ -33,7 +33,7 @@ const char MAIN_page[] PROGMEM = R"=====(
 <tr><td colspan=2 class=heading>WiFi Setup</td></tr>
 <tr><td>SSID:</td><td><input type=text name="ssid" maxlength="32" autocorrect="off" autocapitalize="off" spellcheck="false" value="@@SSID@@">1-32 char</td></tr>
 <tr><td>PSK:</td><td><input type=text name="psk" maxlength="63" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" pattern=".{0}|.{8,}" title="Either 0 OR (8 chars minimum)">8-63 char</td></tr>
-<tr><td colspan=2>Update Wifi config:<input type=checkbox name=update_wifi value=1></td></tr>
+<tr><td colspan=2>Update Wifi config:<input type=checkbox name=update_wifi value="1"></td></tr>
 
 <tr><td colspan=2 class=heading>Time Setup</td></tr>
 <tr><td>NTP Server:</td><td><input type=text name="ntpsrv" value="@@NTPSRV@@" required></td></tr>
@@ -145,6 +145,10 @@ Dim End Hour:</td><td>
 <a href="/">Refresh Page</a>
 <p>
 <a href="/fwupload">Firmware Upload</a>
+<p>
+<form action="/reset" method="post" onsubmit="return confirm('Are you sure you want to Load Defaults and Reset WiFi?');">
+<input type="submit" value="Factory Reset">
+</form>
 <p>
 <a href="https://github.com/ntsecrets/espclock/wiki/Credits">Credits</a><br>
 For support and sales information, go to <a href="http://www.espclock.com">www.espclock.com</a> or email sales@espclock.com.<br>

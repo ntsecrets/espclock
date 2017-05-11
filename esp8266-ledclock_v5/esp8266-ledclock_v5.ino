@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 79;
+const int VERSION_MINOR = 80;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -191,6 +191,18 @@ String GenerateWeekList(uint8_t SelectedItem, String Setting) {
 
 }
 
+void handleReset() {
+
+  if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
+    return server.requestAuthentication();
+  }
+
+  settings.SaveDefaults();
+  eraseSSID();
+  ESP.restart();
+
+}
+
 void handleRoot() {
 
   if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
@@ -297,9 +309,7 @@ void handleForm() {
   if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
     return server.requestAuthentication();
   }
-
-
-  String update_wifi = server.arg("update_wifi");
+  
   //String t_ssid = server.arg("ssid");
   // String t_psk = server.arg("psk");
   String t_timeserver = server.arg("ntpsrv");
@@ -363,18 +373,9 @@ void handleForm() {
   settings.Save();
 
 
-  server.handleClient();
-
-  clockMode = MODE_CLOCK;
-
-  if (update_wifi == "1") {
-    // delay(1000);
-    if (server.arg("ssid") == "") {
-      eraseSSID();
-    }
-    else {
+  if (server.arg("update_wifi") == "1") {
+  
       setupNewWiFi(server.arg("ssid"), server.arg("psk"));
-    }
   }
 
   ntp.ntpServerName = (char*)settings.timeserver;
@@ -385,7 +386,7 @@ void handleForm() {
   }
 
 
-
+clockMode = MODE_CLOCK;
 
 }
 
@@ -411,6 +412,7 @@ void setup() {
   //  setupTime();
   server.on("/", handleRoot);
   server.on("/form", handleForm);
+  server.on("/reset", handleReset);
 
   strcpy(www_password, ID.c_str());  //need this to get the pw to work for some reason with the update svr.
 
@@ -424,6 +426,10 @@ void setup() {
 
 void loop() {
   server.handleClient();
+
+  if (!WiFi.SSID()) {
+    setupAP();
+  }
 
   if (digitalRead(SETUP_PIN) == 0) {
 
@@ -631,7 +637,7 @@ void setupNewWiFi(String sSSID, String PSK) {
 
 void eraseSSID() {
   WiFi.disconnect();
-  clockMode = MODE_SETUP;
+ // clockMode = MODE_SETUP;
 }
 
 void setupAP() {
@@ -644,7 +650,7 @@ void setupAP() {
 
   // if DNSServer is started with "*" for domain name, it will reply with
   // provided IP to all DNS request
-  dnsServer.start(DNS_PORT, "*", apIP);
+  dnsServer.start(DNS_PORT, "espclock.com", apIP);
 
   displayAP();
 }
