@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 80;
+const int VERSION_MINOR = 81;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -299,8 +299,12 @@ void handleRoot() {
   //   s.replace("@@TIMESERVER2@@", "<br>Current NTP Server 2: " + String(NTP.getNTPServer(1)));
   //  }
 
+  
   httpUpdateResponse = "";
-  server.send(200, "text/html", s);
+  server.setContentLength(s.length());   //tell the browser how long it is
+  server.send(200, "text/html", "");  //set the content type
+
+  server.sendContent(s);  //send the string - this function properly chunks it up
 }
 
 void handleForm() {
