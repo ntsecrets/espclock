@@ -1,5 +1,5 @@
 
-const char MAIN_page[] PROGMEM = R"=====(
+const char HEADER_page[] PROGMEM = R"=====(
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,6 +15,10 @@ const char MAIN_page[] PROGMEM = R"=====(
  .update {color: #dd3333; font-size: 0.75em;}
  </style>
 </head><body>
+)=====";
+
+
+const char MAIN_page[] PROGMEM = R"=====(
 <div class=title>NTP Clock @@VERSION@@</div>
 <div class=name>Location: @@CLOCKNAME@@</div>
 <div class=name>Built @@BUILDDATE@@ @@BUILDTIME@@</div>

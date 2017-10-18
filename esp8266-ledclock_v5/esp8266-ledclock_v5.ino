@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 81;
+const int VERSION_MINOR = 82;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -301,10 +301,14 @@ void handleRoot() {
 
   
   httpUpdateResponse = "";
-  server.setContentLength(s.length());   //tell the browser how long it is
+  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
   server.send(200, "text/html", "");  //set the content type
+  server.sendContent_P(HEADER_page, sizeof(HEADER_page));
 
-  server.sendContent(s);  //send the string - this function properly chunks it up
+   for (int i=1; i < s.length(); i = i + 10) {
+    server.sendContent(s.substring(i, i+10));  //send the string - this function properly chunks it up
+   }
+
 }
 
 void handleForm() {
