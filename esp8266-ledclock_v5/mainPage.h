@@ -149,6 +149,7 @@ Dim End Hour:</td><td>
 <a href="/">Refresh Page</a>
 <p>
 <a href="/fwupload">Firmware Upload</a>
+<p>Click <a href="https://github.com/ntsecrets/espclock/raw/master/esp8266-ledclock_v5/esp8266-ledclock_v5.ino.generic.bin">here</a> to download latest firmware.
 <p>
 <form action="/reset" method="post" onsubmit="return confirm('Are you sure you want to Load Defaults and Reset WiFi?');">
 <input type="submit" value="Factory Reset">

@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 82;
+const int VERSION_MINOR = 83;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -19,6 +19,7 @@ char *www_password = new char[ID.length() + 1];
 #include <WiFiServer.h>
 
 #include <ESP8266WebServer.h>
+
 //#include <ESP8266mDNS.h>
 #include "NtpTime.h"
 
@@ -67,8 +68,8 @@ TimeChangeRule *tcr;
 Timezone myTZ( DT, ST);
 
 void handleNotFound() {
-  server.sendHeader("Location", String("/"), true);
-  server.send ( 302, "text/plain", "");
+  //server.sendHeader("Location", String("/"), true);
+  server.send ( 404, "text/plain", "404 not found!");
 
 }
 
@@ -301,14 +302,17 @@ void handleRoot() {
 
   
   httpUpdateResponse = "";
-  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  server.setContentLength(CONTENT_LENGTH_UNKNOWN);  //enable chunked encoding
+  
   server.send(200, "text/html", "");  //set the content type
-  server.sendContent_P(HEADER_page, sizeof(HEADER_page));
-
-   for (int i=1; i < s.length(); i = i + 10) {
+  server.sendContent_P(HEADER_page);
+  
+   for (int i=0; i < s.length(); i = i + 10) {
     server.sendContent(s.substring(i, i+10));  //send the string - this function properly chunks it up
+    
    }
-
+// see https://github.com/esp8266/Arduino/issues/3225 for how to implement this
+   server.endChunkedContent();   //send end to chunks
 }
 
 void handleForm() {
