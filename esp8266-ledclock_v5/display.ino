@@ -408,6 +408,8 @@ void displayClock() {
         // turn on if syncind is enabled
         if (settings.syncind) {
           matrix2.writeDigitNum(4, s % 10  , true);
+        } else {
+          matrix2.writeDigitNum(4, s % 10  , false);  //minor bug, digit would disappear in space mode without this.
         }
       }
 
