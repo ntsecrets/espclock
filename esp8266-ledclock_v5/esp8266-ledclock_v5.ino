@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 83;
+const int VERSION_MINOR = 84;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -23,16 +23,16 @@ char *www_password = new char[ID.length() + 1];
 //#include <ESP8266mDNS.h>
 #include "NtpTime.h"
 
-#include <DNSServer.h>  // for setting up
+//#include <DNSServer.h>  // for setting up
 
 
 #include <ESP8266HTTPUpdateServer.h>   //OTA update stuff!!
 ESP8266HTTPUpdateServer httpUpdater;
 
 // dns server stuff - setup mode
-DNSServer dnsServer;
+//DNSServer dnsServer;
 IPAddress apIP(192, 168, 4, 1);
-const byte DNS_PORT = 53;
+//const byte DNS_PORT = 53;
 
 //ESP8266HTTPUpdateServer httpUpdater2; //temporary backdoor
 
@@ -251,6 +251,12 @@ void handleRoot() {
     s.replace("@@CENTERDOT@@", "");
   }
 
+  if (settings.spacemode == 1) {
+    s.replace("@@SPACEMODE@@", "checked");
+  } else {
+    s.replace("@@SPACEMODE@@", "");
+  }
+
   //dstDayofweek
 
   s.replace("@@DSTDAYOFWEEK@@", GenerateDayList(settings.dstDayofweek, "dstDayofweek"));
@@ -307,12 +313,9 @@ void handleRoot() {
   server.send(200, "text/html", "");  //set the content type
   server.sendContent_P(HEADER_page);
   
-   for (int i=0; i < s.length(); i = i + 10) {
-    server.sendContent(s.substring(i, i+10));  //send the string - this function properly chunks it up
-    
-   }
-// see https://github.com/esp8266/Arduino/issues/3225 for how to implement this
-   server.endChunkedContent();   //send end to chunks
+    //send the page
+      server.sendContent(s);
+ 
 }
 
 void handleForm() {
@@ -328,11 +331,7 @@ void handleForm() {
   t_timeserver.toCharArray(settings.timeserver, EEPROM_TIMESERVER_LENGTH, 0);
   //t_timeserver = server.arg("ntpsrv1");
   //t_timeserver.toCharArray(settings.timeserver1, EEPROM_TIMESERVER1_LENGTH, 0);
-  /* if (update_wifi == "1") {
-     settings.ssid = t_ssid;
-     settings.psk = t_psk;
-
-    }  */
+  
   //dst
   server.arg("dst").toCharArray(settings.DST, EEPROM_DT_LENGTH, 0);
   server.arg("std").toCharArray(settings.STD, EEPROM_ST_LENGTH, 0);
@@ -365,6 +364,7 @@ void handleForm() {
 
   settings.dimmode = server.arg("dimmode").toInt();
   settings.centerdot = server.arg("centerdot").toInt();
+  settings.spacemode = server.arg("spacemode").toInt();
 
 
   int syncInt = server.arg("ntpint").toInt();;
@@ -413,8 +413,6 @@ void setup() {
   pinMode(SETUP_PIN, INPUT_PULLUP);
   digitalWrite(SETUP_PIN, HIGH);
 
-  //  MDNS.begin("espclock");
-  //  MDNS.addService("http", "tcp", 80);
 
   server.onNotFound ( handleNotFound );
 
@@ -476,7 +474,7 @@ void loop() {
     //  }
   } else {
 
-    dnsServer.processNextRequest();
+   // dnsServer.processNextRequest();
     yield();
 
     //mode setup
@@ -532,70 +530,17 @@ void setupWiFi() {
   setupSTA();
 }
 
-/*
-  void setupSTA()
-  {
-
-  char ssid[32];
-  char psk[64];
-  memset(ssid, 0, 32);
-  memset(psk, 0, 64);
-  displayBusy(1);
-
-
-  clockMode = MODE_CLOCK;
-  WiFi.mode(WIFI_STA);
-  settings.ssid.toCharArray(ssid, 32);
-  settings.psk.toCharArray(psk, 64);
-  WiFi.disconnect();  //this seems to help with the initial connect after a brief power interruption
-  WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
-  if (settings.psk.length()) {
-   WiFi.begin(ssid, psk);
-
-  } else {
-   WiFi.begin(ssid);
-   ;
-  }
-
-  uint8_t conncount = 100;
-  //if you don't succeed try try again
-  while (WiFi.status() != WL_CONNECTED) {
-
-    delay(100);
-    if (conncount > 200) {
-       WiFi.disconnect();
-       displayDash();
-       delay(1000);
-       displayID();
-       if (settings.psk.length()) {
-            WiFi.begin(ssid, psk);
-          } else {
-            WiFi.begin(ssid);
-          }
-       conncount = 0;
-    }
-
-
-    conncount++;
-  }
-  // stopDisplayBusy();
-  // displayDash();
-
-
-
-  displayIP(false);
-  delay(1000);
-  displayIP(true);
-  delay(1000);
-  } */
 
 void setupSTA() {
 
   clockMode = MODE_CLOCK;
   // https://github.com/esp8266/Arduino/issues/2186 - need the stuff below to fully reset an existing conn.
   WiFi.persistent(false);
+  
   WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_STA);
+
+  WiFi.setAutoConnect(true);
 
   // end conn reset
   // set the hostname
@@ -627,7 +572,8 @@ void setupNewWiFi(String sSSID, String PSK) {
   WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
 
   if (PSK) {
-    WiFi.begin(sSSID.c_str(), PSK.c_str());
+   WiFi.begin(sSSID.c_str(), PSK.c_str());   
+   
   } else {
     WiFi.begin(sSSID.c_str());
   }
@@ -662,7 +608,7 @@ void setupAP() {
 
   // if DNSServer is started with "*" for domain name, it will reply with
   // provided IP to all DNS request
-  dnsServer.start(DNS_PORT, "espclock.com", apIP);
+ // dnsServer.start(DNS_PORT, "espclock.com", apIP);
 
   displayAP();
 }

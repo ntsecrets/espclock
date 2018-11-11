@@ -35,15 +35,15 @@ const char MAIN_page[] PROGMEM = R"=====(
 
 
 <tr><td colspan=2 class=heading>WiFi Setup</td></tr>
-<tr><td>SSID:</td><td><input type=text name="ssid" maxlength="32" autocorrect="off" autocapitalize="off" spellcheck="false" value="@@SSID@@">1-32 char</td></tr>
-<tr><td>PSK:</td><td><input type=text name="psk" maxlength="63" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" pattern=".{0}|.{8,}" title="Either 0 OR (8 chars minimum)">8-63 char</td></tr>
+<tr><td>SSID:</td><td><input type=text name="ssid" maxlength="32" autocomplete="off" spellcheck="false" value="@@SSID@@">1-32 char</td></tr>
+<tr><td>PSK:</td><td><input type=text name="psk" maxlength="63" autocomplete="off" spellcheck="false" value="" pattern=".{0}|.{8,}" title="Either 0 OR (8 chars minimum)">8-63 char</td></tr>
 <tr><td colspan=2>Update Wifi config:<input type=checkbox name=update_wifi value="1"></td></tr>
 
 <tr><td colspan=2 class=heading>Time Setup</td></tr>
 <tr><td>NTP Server:</td><td><input type=text name="ntpsrv" value="@@NTPSRV@@" required></td></tr>
 <tr><td>Sync Interval:</td><td><input type=text name="ntpint" value="@@NTPINT@@" required>sec</td></tr>
 <tr><td>DST:</td><td><input type=text name="dst" value="@@DST@@" size=3></td>
-<tr><tr><td>
+</tr><tr><td>
 DST Week:</td><td>
 @@DSTWEEK@@
 </td>
@@ -79,7 +79,7 @@ DST Offset:
 </tr>
 
 <tr><td>STD:</td><td><input type=text name="std" value="@@STD@@" size=3></td>
-<tr><tr><td>
+</tr><tr><td>
 STD Week:</td><td>
 @@STDWEEK@@
 </td>
@@ -137,8 +137,9 @@ Dim End Hour:</td><td>
 <tr><td>12 HR mode?:</td><td><input type=checkbox name="twelvehr" value=1 @@12HRMODE@@></td></tr>
 <tr><td>Sync Indicator?:</td><td><input type=checkbox name="syncind" value=1 @@SYNCIND@@></td></tr>
 <tr><td>Center Dot?:</td><td><input type=checkbox name="centerdot" value=1 @@CENTERDOT@@></td></tr>
+<tr><td>Spaced out time?:</td><td><input type=checkbox name="spacemode" value=1 @@SPACEMODE@@></td></tr>
 </table>
-<p/>
+<p>
 <input type="submit" value="Update">
 </form>
 <div class="update">@@UPDATERESPONSE@@</div>

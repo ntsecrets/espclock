@@ -159,7 +159,7 @@ void displayClock() {
 
   local = myTZ.toLocal(ntp.timestamp + settings.fudge, &tcr);
 
-//ntp.LI = 2;
+  //ntp.LI = 2;
 
   //leap second?  Work in progress!
   if (ntp.LI != 0 && ntp.LI != 3) {
@@ -181,15 +181,15 @@ void displayClock() {
     } else {
       if (leapApplied) {
         // sub 1 second to time
-       if (ntp.LI == 1) {
-        h = hour(local - 1);
-        m = minute(local - 1);
-        s = second(local - 1);
-      } else {  // skip over 59
-        h = hour(local + 1);
-        m = minute(local + 1);
-        s = second(local + 1);
-      }
+        if (ntp.LI == 1) {
+          h = hour(local - 1);
+          m = minute(local - 1);
+          s = second(local - 1);
+        } else {  // skip over 59
+          h = hour(local + 1);
+          m = minute(local + 1);
+          s = second(local + 1);
+        }
 
       } else {  // day leading up to leap second (normal time)
         h = hour(local);
@@ -214,7 +214,7 @@ void displayClock() {
   // dim the display if its in the hours
 
   if (settings.dimmode == 0) {  //auto mode
-  if (h >= settings.dim || h <= settings.bright) {
+    if (h >= settings.dim || h <= settings.bright) {
       matrix.setBrightness(1);
       matrix2.setBrightness(1);
     } else {
@@ -228,35 +228,35 @@ void displayClock() {
   }
 
 
+  if (settings.spacemode == 0) {
 
+    // Show the time on the display by turning it into a numeric
+    // value, like 3:30 turns into 330, by multiplying the hour by
+    // 100 and then adding the minutes.
+    displayValue = h * 100 + m;
 
-  // Show the time on the display by turning it into a numeric
-  // value, like 3:30 turns into 330, by multiplying the hour by
-  // 100 and then adding the minutes.
-  displayValue = h * 100 + m;
-
-  // Do 24 hour to 12 hour format conversion when required.
-  if (settings.twelvehr != 0) {
-    // Handle when hours are past 12 by subtracting 12 hours (1200 value).
-    if (h > 12) {
-      displayValue -= 1200;
+    // Do 24 hour to 12 hour format conversion when required.
+    if (settings.twelvehr != 0) {
+      // Handle when hours are past 12 by subtracting 12 hours (1200 value).
+      if (h > 12) {
+        displayValue -= 1200;
+      }
+      // Handle hour 0 (midnight) being shown as 12.
+      else if (h == 0) {
+        displayValue += 1200;
+      }
     }
-    // Handle hour 0 (midnight) being shown as 12.
-    else if (h == 0) {
-      displayValue += 1200;
+
+    if (s % 2 == 0) {
+      blinkColon = true;
+    } else {
+      blinkColon = false;
     }
-  }
 
-  if (s % 2 == 0) {
-    blinkColon = true;
-  } else {
-    blinkColon = false;
-  }
-
- // boolean drawDots = false;
- // if (!ntp.timeIsSynced && blinkColon == true) {
- //   displayDash();
- // } else {
+    // boolean drawDots = false;
+    // if (!ntp.timeIsSynced && blinkColon == true) {
+    //   displayDash();
+    // } else {
 
 
     matrix2.print(s * 100 + milliseconds, DEC);
@@ -284,23 +284,23 @@ void displayClock() {
 
     milliseconds = (millis() - timeStamp) / 10;
 
-     
-      if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced || WiFi.status() != WL_CONNECTED) {
-        if (!settings.syncind) {   //option in UI to invert the display of the dot if it is synced or not
-         matrix2.writeDigitNum(4, milliseconds % 10  , true);
-        }
-         else
-         {
-          matrix2.writeDigitNum(4, milliseconds % 10  , false);
-         }
-      
-        // synced = false;
-      } else {
-        // turn on if syncind is enabled
-        if (settings.syncind) { 
-          matrix2.writeDigitNum(4, milliseconds % 10  , true);
-        }
+
+    if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced || WiFi.status() != WL_CONNECTED) {
+      if (!settings.syncind) {   //option in UI to invert the display of the dot if it is synced or not
+        matrix2.writeDigitNum(4, milliseconds % 10  , true);
       }
+      else
+      {
+        matrix2.writeDigitNum(4, milliseconds % 10  , false);
+      }
+
+      // synced = false;
+    } else {
+      // turn on if syncind is enabled
+      if (settings.syncind) {
+        matrix2.writeDigitNum(4, milliseconds % 10  , true);
+      }
+    }
 
 
 
@@ -328,10 +328,10 @@ void displayClock() {
 
       // enable dot if selected
       if (settings.centerdot) {   //option in UI to invert the display of the dot if it is synced or not
-         matrix.writeDigitNum(4, displayValue % 10  , true);
-        }
+        matrix.writeDigitNum(4, displayValue % 10  , true);
+      }
 
-     
+
 
       matrix.drawColon(blinkColon);
 
@@ -347,15 +347,94 @@ void displayClock() {
         matrix.writeDigitNum(1, 0);
         matrix.writeDigitNum(0, 0);  //bill likes 00 at midnight
       }
+      matrix.writeDisplay();
+    }
+    
+    matrix2.writeDisplay();
+  } else {
+    // space display mode - XX XX XX display new feature on 5.84
+    if (milliseconds > 99 || lastsecond < s) {
+      milliseconds = 0;
+      timeStamp = millis();
 
     }
+    lastsecond = s;
+     milliseconds = (millis() - timeStamp) / 10;
+    if (milliseconds == 0) { //only update if it needs it (on the second)
+      clearDigits();
 
- // }
+      // hours and first digit of the minutes?
 
-  matrix.writeDisplay();
+      displayValue = h;
+
+      // Do 24 hour to 12 hour format conversion when required.
+      if (settings.twelvehr != 0) {
+        // Handle when hours are past 12 by subtracting 12 hours (1200 value).
+        if (h > 12) {
+          displayValue -= 12;
+        }
+        // Handle hour 0 (midnight) being shown as 12.
+        else if (h == 0) {
+          displayValue += 12;
+        }
+      }
+
+      // hours
+      if (displayValue < 10) {
+        // we only need to update the 2nd digit
+        matrix.writeDigitNum(0, 0);
+        matrix.writeDigitNum(1, displayValue);
+
+      } else {
+
+        // divide by 10 to get the first digit
+        matrix.writeDigitNum(0, displayValue / 10);
+        matrix.writeDigitNum(1, displayValue % 10);
+
+      }
+
+      //seconds
+      if (ntp.lastSync + 1 == ntp.timestamp || !ntp.timeIsSynced || WiFi.status() != WL_CONNECTED) {
+        if (!settings.syncind) {   //option in UI to invert the display of the dot if it is synced or not
+          matrix2.writeDigitNum(4, s % 10  , true);
+        }
+        else
+        {
+          matrix2.writeDigitNum(4, s % 10  , false);
+        }
+
+        // synced = false;
+      } else {
+        // turn on if syncind is enabled
+        if (settings.syncind) {
+          matrix2.writeDigitNum(4, s % 10  , true);
+        }
+      }
+
+      matrix2.writeDigitNum(3, s / 10);
 
 
-  matrix2.writeDisplay();
+
+      // minutes
+      if (m < 10) {
+        matrix.writeDigitNum(4, 0);
+      } else {
+        matrix.writeDigitNum(4, m / 10);
+      }
+
+      // now the other half goes to the first digit on display 2
+
+      matrix2.writeDigitNum(0, m % 10);
+
+      matrix.writeDisplay();
+
+
+      matrix2.writeDisplay();
+
+
+    }
+  }
+
 
 
   //display();
