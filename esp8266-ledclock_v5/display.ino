@@ -12,7 +12,10 @@ Adafruit_7segment matrix2 = Adafruit_7segment();
 const uint16_t
 dash = 0b0000000001000000,
 letter_a = 0b0000000011110111, // A
-letter_p = 0b0000000011110011; // P
+letter_p = 0b0000000011110011, // P
+letter_u = 0b0000000000111110,  // cap U
+letter_s = 0b0000000011101101,   //S
+letter_e = 0b0000000011111001;  //E
 
 // Remember if the colon was drawn on the display so it can be blinked
 // on and off every second.
@@ -66,6 +69,21 @@ void display() {
   matrix.writeDisplay();
   matrix2.writeDisplay();
 }
+
+void displayUseApp(){
+   clearDigits();
+    matrix.writeDigitRaw(0, letter_u);
+    matrix.writeDigitRaw(1, letter_s);
+    matrix.writeDigitRaw(3, letter_e);
+
+    matrix2.writeDigitRaw(0, letter_a);
+    matrix2.writeDigitRaw(1, letter_p);
+    matrix2.writeDigitRaw(3, letter_p);
+    display();
+  
+}
+
+
 
 void displayAP() {
   /* digits[0] = 0x10;
@@ -483,6 +501,3 @@ void displayVersion() {
   display();
 
 }
-
-
-

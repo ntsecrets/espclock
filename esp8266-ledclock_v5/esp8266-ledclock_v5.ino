@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 84;
+const int VERSION_MINOR = 85;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -29,6 +29,8 @@ char *www_password = new char[ID.length() + 1];
 #include <ESP8266HTTPUpdateServer.h>   //OTA update stuff!!
 ESP8266HTTPUpdateServer httpUpdater;
 
+
+
 // dns server stuff - setup mode
 //DNSServer dnsServer;
 IPAddress apIP(192, 168, 4, 1);
@@ -52,6 +54,7 @@ int clockMode;
 //int wificonnects = 0;
 uint8_t setupdisp = 0;
 //bool synced = false;
+
 
 time_t firstSync = 0;
 
@@ -306,16 +309,16 @@ void handleRoot() {
   //   s.replace("@@TIMESERVER2@@", "<br>Current NTP Server 2: " + String(NTP.getNTPServer(1)));
   //  }
 
-  
+
   httpUpdateResponse = "";
   server.setContentLength(CONTENT_LENGTH_UNKNOWN);  //enable chunked encoding
-  
+
   server.send(200, "text/html", "");  //set the content type
   server.sendContent_P(HEADER_page);
-  
-    //send the page
-      server.sendContent(s);
- 
+
+  //send the page
+  server.sendContent(s);
+
 }
 
 void handleForm() {
@@ -324,14 +327,14 @@ void handleForm() {
   if (!server.authenticate(www_username, String(ESP.getChipId(), HEX).c_str()) && clockMode == MODE_CLOCK) {
     return server.requestAuthentication();
   }
-  
+
   //String t_ssid = server.arg("ssid");
   // String t_psk = server.arg("psk");
   String t_timeserver = server.arg("ntpsrv");
   t_timeserver.toCharArray(settings.timeserver, EEPROM_TIMESERVER_LENGTH, 0);
   //t_timeserver = server.arg("ntpsrv1");
   //t_timeserver.toCharArray(settings.timeserver1, EEPROM_TIMESERVER1_LENGTH, 0);
-  
+
   //dst
   server.arg("dst").toCharArray(settings.DST, EEPROM_DT_LENGTH, 0);
   server.arg("std").toCharArray(settings.STD, EEPROM_ST_LENGTH, 0);
@@ -386,8 +389,8 @@ void handleForm() {
 
 
   if (server.arg("update_wifi") == "1") {
-  
-      setupNewWiFi(server.arg("ssid"), server.arg("psk"));
+
+    setupNewWiFi(server.arg("ssid"), server.arg("psk"), false);
   }
 
   ntp.ntpServerName = (char*)settings.timeserver;
@@ -398,7 +401,7 @@ void handleForm() {
   }
 
 
-clockMode = MODE_CLOCK;
+  clockMode = MODE_CLOCK;
 
 }
 
@@ -474,7 +477,7 @@ void loop() {
     //  }
   } else {
 
-   // dnsServer.processNextRequest();
+    // dnsServer.processNextRequest();
     yield();
 
     //mode setup
@@ -506,6 +509,8 @@ void loop() {
 
 void setupWiFi() {
 
+  bool SmartStatus = false;
+
   settings.Load();
   // Wait up to 5s for GPIO0 to go low to enter AP/setup mode.
   //displayBusy(0);
@@ -521,13 +526,22 @@ void setupWiFi() {
 
     // if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
     if (digitalRead(SETUP_PIN) == 0 || WiFi.SSID() == "") {
+      clockMode = MODE_SETUP;
+      // new 5.85 go into SMART setup mode for 2 min then go into regular mode
 
-      return setupAP();
+      SmartStatus = setupSmartMode();
+      if (clockMode == MODE_SETUP) {
+        return setupAP();
+
+      }
+
     }
     delay(50);
   }
   // stopDisplayBusy();
-  setupSTA();
+  if (!SmartStatus) {   //no need to setup STA if smart config succeeded
+    setupSTA();
+  }
 }
 
 
@@ -536,7 +550,7 @@ void setupSTA() {
   clockMode = MODE_CLOCK;
   // https://github.com/esp8266/Arduino/issues/2186 - need the stuff below to fully reset an existing conn.
   WiFi.persistent(false);
-  
+
   WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_STA);
 
@@ -565,18 +579,23 @@ void setupSTA() {
 }
 
 
-void setupNewWiFi(String sSSID, String PSK) {
+void setupNewWiFi(String sSSID, String PSK, bool Smart) {
 
   clockMode = MODE_CLOCK;
   WiFi.mode(WIFI_STA);
   WiFi.hostname(String("espclock-") + String(ESP.getChipId(), HEX).c_str());
 
-  if (PSK) {
-   WiFi.begin(sSSID.c_str(), PSK.c_str());   
-   
+  if (Smart) {
+    WiFi.begin(); // should already be set?
+  }
+  else if (PSK) {
+    WiFi.begin(sSSID.c_str(), PSK.c_str());
+
   } else {
     WiFi.begin(sSSID.c_str());
+
   }
+
 
   while (WiFi.status() != WL_CONNECTED) {
     displayDash();
@@ -595,10 +614,11 @@ void setupNewWiFi(String sSSID, String PSK) {
 
 void eraseSSID() {
   WiFi.disconnect();
- // clockMode = MODE_SETUP;
+
 }
 
 void setupAP() {
+
   clockMode = MODE_SETUP;
 
   int channel = random(1, 12);
@@ -608,11 +628,40 @@ void setupAP() {
 
   // if DNSServer is started with "*" for domain name, it will reply with
   // provided IP to all DNS request
- // dnsServer.start(DNS_PORT, "espclock.com", apIP);
+  // dnsServer.start(DNS_PORT, "espclock.com", apIP);
 
   displayAP();
+
+
 }
 
+bool setupSmartMode() {
+  clockMode = MODE_SETUP;
+
+  // start the smart config mode
+  //  WiFi.mode(WIFI_AP_STA);
+  //WiFi.mode(WIFI_OFF);
+  WiFi.beginSmartConfig();
+
+  while (millis() < 60000) {
+    if (!WiFi.smartConfigDone()) {
+      delay(1000);
+      displayUseApp();
+      delay(1000);
+      displayDash();
+    }  else {
+      // returnd true so we shoud exit setup mode and carry on
+
+    // WiFi.stopSmartConfig();
+      clockMode = MODE_CLOCK;
+      displayDash();
+      delay(2000);  // might make this fancier in the future to show success message but for now just dashes
+      
 
 
-
+      return true;
+    }
+  }
+  WiFi.stopSmartConfig();
+  return false;
+}
