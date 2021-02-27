@@ -1,7 +1,7 @@
 #include <Wire.h> // Enable this line if using Arduino Uno, Mega, etc.
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
-#include <Timezone.h>
+#include <Timezone.h>  //Jack Christensen timezone lib
 #include <EEPROM.h>
 //#include <time.h>
 #include <TimeLib.h>
