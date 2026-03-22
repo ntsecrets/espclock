@@ -4,3 +4,5 @@
 
 *.zip
 esp8266-ledclock_v5/_temp_by_dltool/downloadPanel1/esp8266-ledclock_v5.ino.generic.bin_rep
+esp8266-ledclock_v5/.DS_Store
+.DS_Store

@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 86;
+const int VERSION_MINOR = 88;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -555,6 +555,8 @@ void setupSTA() {
   WiFi.mode(WIFI_STA);
 
   WiFi.setAutoConnect(true);
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
+  WiFi.setAutoReconnect(true);
 
   // end conn reset
   // set the hostname
