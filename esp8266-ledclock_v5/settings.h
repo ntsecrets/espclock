@@ -134,6 +134,7 @@
 #define DEFAULT_DIMMODE 0
 #define DEFAULT_CENTERDOT 0
 #define DEFAULT_SPACEMODE 0
+#define DEFAULT_SSID 0
 
 // TODO finish the defaults
 
@@ -164,6 +165,7 @@ class Settings {
         SaveDefaults();
       }
       // Read SSID
+      
       /* ssid = "";
       for (int i = EEPROM_SSID_OFFSET ; i < EEPROM_SSID_OFFSET + EEPROM_SSID_LENGTH ; i++) {
         if (buffer[i]) ssid += buffer[i];
@@ -180,6 +182,9 @@ class Settings {
        */
 
       //  timezone = long(buffer[EEPROM_TZ_OFFSET]);
+      ssid = bool(buffer[EEPROM_SSID_OFFSET]);
+
+
 
       strncpy(timeserver, &buffer[EEPROM_TIMESERVER_OFFSET], EEPROM_TIMESERVER_LENGTH);
       if (strlen(timeserver) < 1) {
@@ -295,6 +300,8 @@ class Settings {
 
       // Copy magic to buffer;
       strncpy((char *)buffer, EEPROM_MAGIC, EEPROM_MAGIC_LENGTH);
+
+      buffer[EEPROM_SSID_OFFSET] = ssid;
 
       // Copy SSID to buffer;
     //  ssid.getBytes(&buffer[EEPROM_SSID_OFFSET], EEPROM_SSID_LENGTH, 0);
@@ -453,7 +460,7 @@ class Settings {
       buffer[EEPROM_FUDGE_OFFSET + 2] = (int)((DEFAULT_FUDGE >> 8) & 0XFF);
       buffer[EEPROM_FUDGE_OFFSET + 3] = (int)((DEFAULT_FUDGE & 0XFF));;
 
-
+      buffer[EEPROM_SSID_OFFSET] = DEFAULT_SSID;
 
       // Write to EEPROM.
       EEPROM.begin(EEPROM_WIFI_SIZE);
@@ -499,7 +506,7 @@ class Settings {
       return ST;
     }
 
-  //  String ssid;
+    uint8_t ssid;  // reusing this if its just set or not 5.89
   //  String psk;
     //long timezone;
     char timeserver[32];   //this was 64 but the flash only had it as 32?

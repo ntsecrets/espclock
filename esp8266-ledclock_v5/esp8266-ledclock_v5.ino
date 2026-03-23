@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 88;
+const int VERSION_MINOR = 89;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -385,13 +385,19 @@ void handleForm() {
   server.sendHeader("Location", "/");
   server.send(302, "text/plain", "Moved");
 
-  settings.Save();
+  
+
+  
 
 
   if (server.arg("update_wifi") == "1") {
+    settings.ssid=1;
 
     setupNewWiFi(server.arg("ssid"), server.arg("psk"), false);
+   
   }
+
+  settings.Save();
 
   ntp.ntpServerName = (char*)settings.timeserver;
 
@@ -440,9 +446,10 @@ void setup() {
 void loop() {
   server.handleClient();
 
-  if (!WiFi.SSID()) {
-    setupAP();
-  }
+  //if (!WiFi.SSID()) {
+  //if (settings.ssid=0) {
+  //  setupAP();
+  //}
 
   if (digitalRead(SETUP_PIN) == 0) {
 
@@ -509,7 +516,7 @@ void loop() {
 
 void setupWiFi() {
 
-  bool SmartStatus = false;
+ // bool SmartStatus = false;
 
   settings.Load();
   // Wait up to 5s for GPIO0 to go low to enter AP/setup mode.
@@ -525,11 +532,11 @@ void setupWiFi() {
 
 
     // if (digitalRead(SETUP_PIN) == 0 || !settings.ssid.length()) {
-    if (digitalRead(SETUP_PIN) == 0 || WiFi.SSID() == "") {
+    if (digitalRead(SETUP_PIN) == 0 || settings.ssid == 0) {
       clockMode = MODE_SETUP;
       // new 5.85 go into SMART setup mode for 2 min then go into regular mode
-
-      SmartStatus = setupSmartMode();
+      // 5.89 took it out it was annoynng
+     // SmartStatus = setupSmartMode();
       if (clockMode == MODE_SETUP) {
         return setupAP();
 
@@ -539,9 +546,9 @@ void setupWiFi() {
     delay(50);
   }
   // stopDisplayBusy();
-  if (!SmartStatus) {   //no need to setup STA if smart config succeeded
+ // if (!SmartStatus) {   //no need to setup STA if smart config succeeded
     setupSTA();
-  }
+ // }
 }
 
 
@@ -549,7 +556,7 @@ void setupSTA() {
 
   clockMode = MODE_CLOCK;
   // https://github.com/esp8266/Arduino/issues/2186 - need the stuff below to fully reset an existing conn.
-  WiFi.persistent(false);
+  WiFi.persistent(true); 
 
   WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_STA);
@@ -577,7 +584,7 @@ void setupSTA() {
   delay(1000);
   displayIP(true);
   delay(1000);
-  WiFi.persistent(true);
+ // WiFi.persistent(true);
 }
 
 
@@ -591,6 +598,7 @@ void setupNewWiFi(String sSSID, String PSK, bool Smart) {
     WiFi.begin(); // should already be set?
   }
   else if (PSK) {
+    WiFi.persistent(true);
     WiFi.begin(sSSID.c_str(), PSK.c_str());
 
   } else {
@@ -637,33 +645,3 @@ void setupAP() {
 
 }
 
-bool setupSmartMode() {
-  clockMode = MODE_SETUP;
-
-  // start the smart config mode
-  //  WiFi.mode(WIFI_AP_STA);
-  //WiFi.mode(WIFI_OFF);
-  WiFi.beginSmartConfig();
-
-  while (millis() < 60000) {
-    if (!WiFi.smartConfigDone()) {
-      delay(1000);
-      displayUseApp();
-      delay(1000);
-      displayDash();
-    }  else {
-      // returnd true so we shoud exit setup mode and carry on
-
-    // WiFi.stopSmartConfig();
-      clockMode = MODE_CLOCK;
-      displayDash();
-      delay(2000);  // might make this fancier in the future to show success message but for now just dashes
-      
-
-
-      return true;
-    }
-  }
-  WiFi.stopSmartConfig();
-  return false;
-}
