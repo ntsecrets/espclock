@@ -97,6 +97,9 @@
 #define EEPROM_SPACEMODE_OFFSET EEPROM_CENTERDOT_OFFSET + EEPROM_CENTERDOT_OFFSET_LENGTH
 #define EEPROM_SPACEMODE_OFFSET_LENGTH 1
 
+#define EEPROM_SETTINGS_OFFSET EEPROM_SPACEMODE_OFFSET + EEPROM_SPACEMODE_OFFSET_LENGTH
+#define EEPROM_SETTINGS_OFFSET_LENGTH 1
+
 //#define EEPROM_TIMESERVER1_OFFSET EEPROM_12HR_OFFSET + EEPROM_12HR_OFFSET_LENGTH
 //#define EEPROM_TIMESERVER1_LENGTH 32
 
@@ -135,6 +138,7 @@
 #define DEFAULT_CENTERDOT 0
 #define DEFAULT_SPACEMODE 0
 #define DEFAULT_SSID 0
+#define DEFAULT_SETTINGS_VERSION 5
 
 // TODO finish the defaults
 
@@ -163,7 +167,7 @@ class Settings {
       if (magic != EEPROM_MAGIC) {
         // load DEFAULTS
         SaveDefaults();
-      }
+      } 
       // Read SSID
       
       /* ssid = "";
@@ -267,7 +271,7 @@ class Settings {
       dimmode = int(buffer[EEPROM_DIMMODE_OFFSET]);
       centerdot = int(buffer[EEPROM_CENTERDOT_OFFSET]);
       spacemode = int(buffer[EEPROM_SPACEMODE_OFFSET]);
-
+      settingsver = int(buffer[EEPROM_SETTINGS_OFFSET]);
      
 
       fudge = ( ((unsigned long)buffer[EEPROM_FUDGE_OFFSET] << 24)
@@ -289,7 +293,16 @@ class Settings {
 
       // TimeChangeRule DT = { "DT", dstWeek, dstDayofweek, dstMonth, dstHour, dstOffset};  //UTC - 4 hours
       // TimeChangeRule ST = { "ST", stdWeek, stdDayofweek, stdMonth, stdHour, stdOffset};   //UTC - 5 hours
+    // handle upgrades here
 
+    if (settingsver != DEFAULT_SETTINGS_VERSION) {
+
+        
+        settingsver = DEFAULT_SETTINGS_VERSION;
+        ssid = 1; //starting in 5.90
+        Save();
+
+    }
 
 
     }
@@ -364,6 +377,7 @@ class Settings {
       buffer[EEPROM_DIMMODE_OFFSET] = dimmode;
       buffer[EEPROM_CENTERDOT_OFFSET] = centerdot;
       buffer[EEPROM_SPACEMODE_OFFSET] = spacemode;
+      buffer[EEPROM_SETTINGS_OFFSET] = settingsver;
 
      // buffer[EEPROM_FUDGE_OFFSET] = fudge;
 
@@ -449,10 +463,11 @@ class Settings {
       buffer[EEPROM_BRIGHT_OFFSET] = DEFAULT_BRIGHT;
 
       buffer[EEPROM_12HR_OFFSET] = 0;
-      buffer[EEPROM_SYNCIND_OFFSET] = 0;
+      buffer[EEPROM_SYNCIND_OFFSET] = 1;
       buffer[EEPROM_DIMMODE_OFFSET] = DEFAULT_DIMMODE;
       buffer[EEPROM_CENTERDOT_OFFSET] = DEFAULT_CENTERDOT;
       buffer[EEPROM_SPACEMODE_OFFSET] = DEFAULT_SPACEMODE;
+      buffer[EEPROM_SETTINGS_OFFSET] = DEFAULT_SETTINGS_VERSION;
 
        // convert from an unsigned long int to a 4-byte array
       buffer[EEPROM_FUDGE_OFFSET] = (int)((DEFAULT_FUDGE >> 24) & 0xFF) ;
@@ -507,6 +522,7 @@ class Settings {
     }
 
     uint8_t ssid;  // reusing this if its just set or not 5.89
+    uint8_t settingsver;
   //  String psk;
     //long timezone;
     char timeserver[32];   //this was 64 but the flash only had it as 32?
