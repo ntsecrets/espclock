@@ -515,7 +515,7 @@ class Settings {
     String name;
 
     // dst  "EST", Second, Sun, Mar, 2, -240
-    char DST[6];
+    char DST[7];
     uint8_t dstWeek;
     uint8_t dstDayofweek;
     uint8_t dstMonth;
@@ -523,7 +523,7 @@ class Settings {
     int dstOffset;
 
     // std
-    char STD[6];
+    char STD[7];
     uint8_t stdWeek;
     uint8_t stdDayofweek;
     uint8_t stdMonth;

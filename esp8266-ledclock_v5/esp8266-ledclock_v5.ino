@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 89;
+const int VERSION_MINOR = 90;
 
 const char* www_username = "admin";
 const char* updatePath = "/fwupload";
@@ -78,7 +78,7 @@ void handleNotFound() {
 
 String GenerateMonthList(uint8_t SelectedItem, String Setting) {
   String ret;
-  char *months = "JanFebMarAprMayJunJulAugSepOctNovDec";
+  const char *months = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
   // what we want to return basically is
   // <option value="1">January</option>  and so on
@@ -151,7 +151,7 @@ String GenerateDimmodeList(uint8_t SelectedItem, String Setting) {
 
 String GenerateDayList(uint8_t SelectedItem, String Setting) {
   String ret;
-  char *days = "SunMonTueWedThrFriSat";
+  const char *days = "SunMonTueWedThrFriSat";
   char daychar[3];
   ret = "<select name=" + Setting + ">";
   uint8_t i;
@@ -174,7 +174,7 @@ String GenerateDayList(uint8_t SelectedItem, String Setting) {
 
 String GenerateWeekList(uint8_t SelectedItem, String Setting) {
   String ret;
-  char *weeks = "Lst1st2nd3rd4th";
+  const char *weeks = "Lst1st2nd3rd4th";
   char weekchar[3];
   ret = "<select name=" + Setting + ">";
   uint8_t i;

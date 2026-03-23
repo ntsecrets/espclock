@@ -43,11 +43,26 @@ void NTP::syncTheTime() {
       ntp.timestamp |= (unsigned long)pcktBuf[43];
       ntp.timestamp -= 2208988800UL;  // UTC/GMT timeSerial << "@" << endl;
       // convert four bytes starting at location 44 to a long integer
-      ntp.milliseconds =  (unsigned long)pcktBuf[44] << 24;
-      ntp.milliseconds |= (unsigned long)pcktBuf[45] << 16;
-      ntp.milliseconds |= (unsigned long)pcktBuf[46] << 8;
-      ntp.milliseconds |= (unsigned long)pcktBuf[47];
-      ntp.milliseconds = (unsigned int)(ntp.milliseconds * 2.3283064365387E-07);
+      uint32_t frac =  (uint32_t)pcktBuf[44] << 24;
+      frac |= (uint32_t)pcktBuf[45] << 16;
+      frac |= (uint32_t)pcktBuf[46] << 8;
+      frac |= (uint32_t)pcktBuf[47];
+
+      // convert to milliseconds (0–999)
+      ntp.milliseconds = (uint32_t)((uint64_t)frac * 1000 >> 32);
+
+      // 5.90 code to put in the packet round trip delay
+      uint32_t halfDelay = ntp.pktDelay / 2;
+
+      // add delay to milliseconds
+      ntp.milliseconds += halfDelay;
+
+      // normalize overflow into seconds
+      if (ntp.milliseconds >= 1000) {
+        ntp.timestamp += ntp.milliseconds / 1000;
+        ntp.milliseconds %= 1000;
+      }
+
       ntp.startMillis = millis();
       ntp.syncTime = ntp.timestamp + ntp.syncOffset;
       ntp.timeIsSynced = true;
@@ -63,24 +78,13 @@ void NTP::syncTheTime() {
           2: Last minute of the day has 59 seconds
           3: Clock is unsynchronized
        */
-      if (CHECK_BIT(pcktBuf[0],7)) {
-         ntp.LI = 2;
-         
-      }
-      if (CHECK_BIT(pcktBuf[0],6)) {
-         ntp.LI = 1;
-         
-      }
+      ntp.LI = (pcktBuf[0] >> 6) & 0x03;  //5.90 fixed this up into a 1 liner
 
-      if (CHECK_BIT(pcktBuf[0],6) && CHECK_BIT(pcktBuf[0],7)) {
-         ntp.LI = 3;
-         
-      }
+      if (ntp.LI == 3) {
+       // server says it's unsynchronized → ignore this packet
+      ntp.timeIsSynced = false;
 
-       if (!CHECK_BIT(pcktBuf[0],6) && !CHECK_BIT(pcktBuf[0],7)) {
-         ntp.LI = 0;
-         
-      }
+     }
       
       break;
     } 
@@ -89,7 +93,7 @@ void NTP::syncTheTime() {
     if (!ntp.timeIsSynced) {
     Udp.stop();
       // didn't get a packet
-      // retry in 60 seconds
+      // retry in 60 secondsf
       ntp.syncTime = ntp.syncTime + 60;
     }
   
@@ -119,12 +123,11 @@ void NTP::addTime() {
 }
 
 const char *NTP::getTimeDate(time_t tm) {
-  char *dt = new char[20];
-  char buf[20];
+  static char dt[20];
 
-  snprintf(buf, sizeof(buf), "%d-%02d-%02dT%02d:%02d:%02d", year(tm), month(tm),
-           day(tm), hour(tm), minute(tm), second(tm));
-  strcpy(dt, buf);
+  snprintf(dt, sizeof(dt), "%d-%02d-%02dT%02d:%02d:%02d",
+           year(tm), month(tm), day(tm),
+           hour(tm), minute(tm), second(tm));
 
   return dt;
 }
