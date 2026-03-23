@@ -1,12 +1,7 @@
 
 *.tmp
-
-
 *.zip
 esp8266-ledclock_v5/.DS_Store
 .DS_Store
-/build
+esp8266-ledclock_v5/build
 
-esp8266-ledclock_v5/build/esp8266.esp8266.generic/esp8266-ledclock_v5.ino.bin
-esp8266-ledclock_v5/build/esp8266.esp8266.generic/esp8266-ledclock_v5.ino.elf
-esp8266-ledclock_v5/build/esp8266.esp8266.generic/esp8266-ledclock_v5.ino.map
