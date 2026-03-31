@@ -1,5 +1,5 @@
 const int VERSION_MAJOR = 5;
-const int VERSION_MINOR = 92;
+const int VERSION_MINOR = 93;
 
 
 const char* www_username = "admin";
@@ -19,9 +19,10 @@ char *www_password = new char[ID.length() + 1];
 #include <ESP8266WiFi.h>
 #include <WiFiServer.h>
 
-#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h> //5.93 added this so that you can easily connect to them locally by name!!
 
-//#include <ESP8266mDNS.h>
+#include <ESP8266WebServer.h> 
+
 #include "NtpTime.h"
 
 //#include <DNSServer.h>  // for setting up
@@ -429,6 +430,9 @@ void setup() {
   server.begin();
 
   setupWiFi();
+
+
+
   //  setupTime();
   server.on("/", handleRoot);
   server.on("/form", handleForm);
@@ -446,6 +450,8 @@ void setup() {
 
 void loop() {
   server.handleClient();
+
+  MDNS.update();
 
   //if (!WiFi.SSID()) {
   //if (settings.ssid=0) {
@@ -585,6 +591,9 @@ void setupSTA() {
   delay(1000);
   displayIP(true);
   delay(1000);
+
+  // start mdns server
+SetupmDNS();
  // WiFi.persistent(true);
 }
 
@@ -615,10 +624,33 @@ void setupNewWiFi(String sSSID, String PSK, bool Smart) {
     delay(1000);
   }
 
+  
+
   displayIP(false);
   delay(1000);
   displayIP(true);
   delay(1000);
+
+  //restart mDNS
+  // start mdns server
+  MDNS.close();
+  SetupmDNS();
+}
+
+void SetupmDNS() {
+
+String hostname = "espclock-" + String(ESP.getChipId(), HEX);
+hostname.toLowerCase();
+  if (MDNS.begin(hostname.c_str())) {
+  MDNS.addService("http", "tcp", 80);
+
+  // add TXT records
+MDNS.addServiceTxt("http", "tcp", "name", settings.name);
+MDNS.addServiceTxt("http", "tcp", "version", String(VERSION_MAJOR) + "." + String(VERSION_MINOR));
+MDNS.addServiceTxt("http", "tcp", "type", "clock");
+
+
+}
 
 }
 
@@ -637,9 +669,10 @@ void setupAP() {
   WiFi.mode(WIFI_AP);
   WiFi.softAP((String(WIFI_AP_NAME) + String(ESP.getChipId(), HEX)).c_str(), WPA_PSK, channel);
 
-  // if DNSServer is started with "*" for domain name, it will reply with
-  // provided IP to all DNS request
-  // dnsServer.start(DNS_PORT, "espclock.com", apIP);
+// start mdns server
+  if (MDNS.begin(String("espclock"))) {
+  MDNS.addService("http", "tcp", 80);
+}
 
   displayAP();
 
