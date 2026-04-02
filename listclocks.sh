@@ -32,6 +32,7 @@ dns-sd -Z "$SERVICE" local 2>/dev/null | awk '
             print "Type:    " type
             print "Version: " version
             print "Name:    " fname
+	    print "http://"name".local/"
             print ""
             break
         }
